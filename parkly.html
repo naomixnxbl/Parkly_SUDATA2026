@@ -236,7 +236,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
         <div class="ctrl"><div class="ctrlhead"><span>arrival hour</span><strong class="ctrlval" id="hourlbl">11:00</strong></div><input type="range" min="0" max="23" value="11" id="hour"></div>
         <div class="ctrl"><div class="ctrlhead"><span>day</span></div><div class="chips" id="days"></div></div>
         <div class="ctrl"><div class="ctrlhead"><span>weather</span></div><div class="chips" id="weather"></div></div>
-        <div class="ctrl"><div class="ctrlhead"><span>extras</span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" id="event">◎ major event</button><button class="pill prem" id="premium">✦ premium</button></div></div>
+        <div class="ctrl"><div class="ctrlhead"><span>extras</span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" id="event">◎ major event</button><button class="pill prem" id="premium">✦ premium</button><button class="pill" id="accessibletoggle" onclick="toggleAccessible()">♿ accessible</button></div></div>
       </div>
     </div>
     <div id="hero"></div>
@@ -544,6 +544,88 @@ const SCOL = { green:'#1a7f3a', yellow:'#c78200', red:'#c23434' };
 // ═══════════════════════════════════════════════════════════════════════
 let state = { dest:'cbd', hour:11, day:'sat', weather:'sunny', event:false, premium:false, tick:0 };
 let customDest = null;   // { lat, lng, name } set by address search
+let showAccessible = false;
+let accessibleCache = null;   // fetched once, reused
+let accessibleLayer = null;   // Leaflet layer group
+
+const MOBILITY_URL = 'https://services1.arcgis.com/cNVyNtjGVZybOQWZ/arcgis/rest/services/Mobility_parking/FeatureServer/1/query?where=1%3D1&outFields=Address,Street,Suburb,Location,SideOfStreet,NumberParkingSpaces,ParkingSpaceAngle&outSR=4326&returnGeometry=true&f=json&resultRecordCount=2000';
+
+async function fetchAccessibleSpots() {
+  if (accessibleCache) return accessibleCache;
+  const res = await fetch(MOBILITY_URL);
+  const json = await res.json();
+  accessibleCache = (json.features || []).map(f => ({
+    lat: f.geometry.y,
+    lng: f.geometry.x,
+    address: [f.attributes.Address, f.attributes.Street].filter(Boolean).join(' '),
+    suburb: f.attributes.Suburb || '',
+    location: f.attributes.Location || '',
+    spaces: f.attributes.NumberParkingSpaces || 1,
+    angle: f.attributes.ParkingSpaceAngle || '',
+    side: f.attributes.SideOfStreet || '',
+  }));
+  return accessibleCache;
+}
+
+function accessibleIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:28px;height:28px;background:#1a6eb5;border:3px solid #fff;border-radius:50%;display:grid;place-items:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3)">♿</div>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+  });
+}
+
+async function toggleAccessible() {
+  showAccessible = !showAccessible;
+  document.getElementById('accessibletoggle').classList.toggle('on', showAccessible);
+
+  if (!showAccessible) {
+    if (accessibleLayer) { accessibleLayer.clearLayers(); }
+    return;
+  }
+
+  const btn = document.getElementById('accessibletoggle');
+  btn.textContent = '⏳ loading…';
+  btn.disabled = true;
+
+  try {
+    const spots = await fetchAccessibleSpots();
+    renderAccessibleLayer(spots);
+  } catch {
+    alert('Could not load accessible parking data.');
+    showAccessible = false;
+    document.getElementById('accessibletoggle').classList.remove('on');
+  } finally {
+    btn.textContent = '♿ accessible';
+    btn.disabled = false;
+    btn.classList.toggle('on', showAccessible);
+  }
+}
+
+function renderAccessibleLayer(spots) {
+  if (!accessibleLayer) accessibleLayer = L.layerGroup().addTo(map);
+  accessibleLayer.clearLayers();
+
+  const centre = customDest
+    ? { lat: customDest.lat, lng: customDest.lng }
+    : (() => { const d = DESTS.find(d => d.id === state.dest); return { lat: d.lat, lng: d.lng }; })();
+
+  // Only show spots within 1.5km of current destination
+  const nearby = spots.filter(s => distKm(centre.lat, centre.lng, s.lat, s.lng) <= 1.5);
+
+  nearby.forEach(s => {
+    const m = L.marker([s.lat, s.lng], { icon: accessibleIcon(), zIndexOffset: 200 });
+    m.bindPopup(`
+      <div class="popn">♿ ${s.address}</div>
+      <div class="popd">${s.suburb}${s.location ? ' · ' + s.location : ''}</div>
+      <div class="popd" style="margin-top:4px">${s.spaces} space${s.spaces > 1 ? 's' : ''} · ${s.angle || 'parking'}${s.side ? ' · ' + s.side : ''}</div>
+    `);
+    m.addTo(accessibleLayer);
+  });
+
+  if (nearby.length === 0) alert('No accessible parking found within 1.5km of this destination.');
+}
 let spotFilter = '';     // text filter for parking lot names
 
 // ── Haversine distance (km) ─────────────────────────────────────
@@ -1178,6 +1260,7 @@ function render() {
   });
 
   renderMap(allSpots, best);
+  if (showAccessible && accessibleCache) renderAccessibleLayer(accessibleCache);
 }
 
 function buildDests() {
