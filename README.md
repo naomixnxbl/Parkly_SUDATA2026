@@ -10,14 +10,16 @@ Parkly tells you whether you'll find a parking spot *before* you leave. Every sp
 
 ```
 Parkly_SUDATA2026/
-├── parkly.html             ← open in browser (the full UI)
-├── proxy.py                ← Terminal 1: relays TfNSW live API
-├── backend.py              ← Terminal 2: user accounts + bookings (Flask + SQLite)
-├── requirements.txt        ← Python deps for backend
-├── Procfile                ← for cloud deployment
-├── parknride_pois.csv      ← 33 Park & Ride locations (TfNSW static dataset)
-├── parkly.db               ← created automatically on first run of backend.py
-└── README.md               ← you are here
+├── parkly.html                  ← open in browser (the full UI)
+├── proxy.py                     ← Terminal 1: relays TfNSW live API
+├── backend.py                   ← Terminal 2: user accounts + bookings (Flask + SQLite)
+├── requirements.txt             ← Python deps for backend
+├── Procfile                     ← for cloud deployment
+├── parknride_pois.csv           ← 33 Park & Ride locations (TfNSW static dataset)
+├── offstreetparkingdata_7.csv   ← Off-street parking slots in Sydney CBD 
+├── parkly.db                    ← created automatically on first run of backend.py
+└── README.md                    ← you are here
+
 ```
 
 ---
