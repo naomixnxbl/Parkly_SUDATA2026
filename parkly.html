@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Parkly — Sydney parking, live</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -15,13 +14,59 @@ body { font-family: 'Fraunces', Georgia, serif; background: #faf7f2; color: #1a1
 .mapwrap { position: relative; height: 100vh; }
 #map { height: 100%; width: 100%; }
 .head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e8e0d4; }
-.logo { width: 40px; height: 40px; background: #1a1916; color: #faf7f2; border-radius: 10px; display: grid; place-items: center; font-size: 22px; }
+.brand-wordmark { font-family: 'Fraunces', Georgia, serif; font-size: 32px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: #1a1916; display: flex; align-items: baseline; }
+.brand-wordmark .dot { color: #1a7f3a; margin-left: 1px; }
+.brand-wordmark .sub { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #6b655a; text-transform: uppercase; letter-spacing: 0.12em; margin-left: 10px; align-self: center; }
 .brand { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; }
 .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
-.live { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #1a7f3a; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
+.live { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #1a7f3a; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
 .live.err { color: #c23434; }
 .pulse { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 1.6s infinite; }
 @keyframes pulse { 50% { opacity: 0.4; transform: scale(1.4); } }
+
+/* Account button + menu */
+.account { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.account-btn { background: #1a1916; color: #faf7f2; border: none; padding: 7px 14px; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.account-btn:hover { background: #2f2d28; }
+.account-btn.signed-in { background: #fff; color: #1a1916; border: 1px solid #e8e0d4; }
+.account-avatar { width: 20px; height: 20px; border-radius: 50%; background: #d4a82c; color: #1a1916; display: grid; place-items: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 11px; }
+.account-email { font-family: 'Fraunces', serif; font-size: 12px; text-transform: none; letter-spacing: 0; }
+
+/* Modal (login + bookings) */
+.modal-bg { position: fixed; inset: 0; background: rgba(26,25,22,0.5); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; animation: fadein 200ms ease; }
+.modal-bg.show { display: flex; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.modal { background: #faf7f2; border-radius: 16px; padding: 32px; width: 420px; max-width: calc(100vw - 40px); max-height: 85vh; overflow-y: auto; position: relative; }
+.modal h2 { font-family: 'Fraunces', serif; font-size: 26px; letter-spacing: -0.02em; margin-bottom: 6px; display: flex; align-items: baseline; }
+.modal h2 .dot { color: #1a7f3a; margin-left: 1px; }
+.modal .tagline { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 24px; }
+.modal-close { position: absolute; top: 16px; right: 16px; background: transparent; border: none; font-size: 22px; color: #6b655a; cursor: pointer; padding: 4px 10px; border-radius: 6px; }
+.modal-close:hover { background: #e8e0d4; }
+.input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.input-group label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; text-transform: uppercase; letter-spacing: 0.08em; }
+.input-group input { padding: 11px 13px; border: 1px solid #e8e0d4; border-radius: 8px; font-family: 'Fraunces', serif; font-size: 14px; background: #fff; outline: none; transition: border 150ms; }
+.input-group input:focus { border-color: #1a1916; }
+.modal-btn { width: 100%; padding: 12px; background: #1a1916; color: #faf7f2; border: none; border-radius: 8px; font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 6px; }
+.modal-btn:hover { background: #2f2d28; }
+.modal-note { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #8a8273; text-align: center; margin-top: 14px; letter-spacing: 0.04em; line-height: 1.5; }
+.modal-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e8e0d4; }
+
+/* Bookings */
+.booking-item { background: #fff; border: 1px solid #e8e0d4; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+.booking-item:last-child { margin-bottom: 0; }
+.booking-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 10px; }
+.booking-name { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; line-height: 1.25; }
+.booking-status { font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+.booking-status.active { background: #e4f3ea; color: #1a7f3a; }
+.booking-status.past { background: #f1ebe0; color: #8a8273; }
+.booking-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; margin-top: 4px; }
+.booking-actions { display: flex; gap: 6px; margin-top: 10px; }
+.booking-action { flex: 1; padding: 7px; border: 1px solid #e8e0d4; background: #fff; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #1a1916; cursor: pointer; text-transform: uppercase; letter-spacing: 0.04em; }
+.booking-action:hover { background: #faf5ea; }
+.booking-action.danger { color: #c23434; }
+.booking-action.danger:hover { background: #fbe6e6; }
+.empty-state { text-align: center; padding: 30px 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8a8273; }
+.empty-state .big { font-family: 'Fraunces', serif; font-size: 32px; color: #1a1916; margin-bottom: 6px; }
 .ds-banner { background: #1e4a2a; color: #a8e5be; padding: 8px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px; margin-bottom: 18px; letter-spacing: 0.02em; display: flex; justify-content: space-between; align-items: center; }
 .ds-banner.warn { background: #4d3a10; color: #f0c878; }
 .ds-banner.err { background: #4a1818; color: #f09898; }
@@ -93,88 +138,17 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
 .popn { font-weight: 600; margin-bottom: 4px; }
 .popd { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; }
 .loading { padding: 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8a8273; }
-.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center; }
-.overlay.open { display:flex; }
-.modal { background:#faf7f2; border-radius:16px; padding:28px; width:340px; max-width:90vw; }
-.modal-title { font-size:18px; font-weight:600; letter-spacing:-0.02em; margin-bottom:4px; }
-.modal-sub { font-family:'JetBrains Mono',monospace; font-size:10px; color:#6b655a; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:20px; }
-.modal-field { margin-bottom:14px; }
-.modal-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:#6b655a; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; display:block; }
-.modal-input { width:100%; padding:10px 12px; border:1px solid #e8e0d4; border-radius:8px; font-family:inherit; font-size:13px; background:#fff; }
-.modal-input:focus { outline:none; border-color:#1a1916; }
-.modal-actions { display:flex; gap:8px; margin-top:20px; }
-.btn-confirm { flex:1; padding:11px; background:#1a1916; color:#faf7f2; border:none; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
-.btn-cancel { padding:11px 16px; background:#fff; color:#1a1916; border:1px solid #e8e0d4; border-radius:8px; font-family:inherit; font-size:13px; cursor:pointer; }
-.confirm-box { text-align:center; padding:8px 0; }
-.confirm-id { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:600; letter-spacing:0.08em; color:#1a1916; margin:12px 0 4px; }
-.confirm-msg { font-size:13px; color:#6b655a; line-height:1.5; }
-.confirm-check { font-size:36px; margin-bottom:8px; }
-
-/* ── Mobile layout ───────────────────────────────────────────── */
-.tabnav { display:none; }
-
-@media (max-width: 768px) {
-  .app { grid-template-columns: 1fr; grid-template-rows: 1fr auto; min-height: 100dvh; }
-
-  .panel {
-    display: none;
-    max-height: calc(100dvh - 56px);
-    border-right: none;
-    border-top: 1px solid #e8e0d4;
-    order: 2;
-    padding: 16px;
-  }
-  .panel.active { display: block; }
-
-  .mapwrap {
-    display: none;
-    height: calc(100dvh - 56px);
-    order: 1;
-  }
-  .mapwrap.active { display: block; }
-
-  .tabnav {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    order: 3;
-    height: 56px;
-    border-top: 1px solid #e8e0d4;
-    background: #faf7f2;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 2000;
-  }
-  .tabnav button {
-    border: none;
-    background: none;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #8a8273;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-  }
-  .tabnav button.active { color: #1a1916; font-weight: 600; }
-  .tabnav button .tabicon { font-size: 18px; }
-
-  .legend { bottom: 72px; }
-}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="panel">
     <div class="head">
-      <div class="logo">◐</div>
-      <div><div class="brand">parkly</div><div class="sub">sydney parking · live</div></div>
-      <div class="live" id="livestatus"><span class="pulse"></span>live</div>
+      <div class="brand-wordmark">parkly<span class="dot">.</span><span class="sub">sydney · live</span></div>
+      <div class="account">
+        <div class="live" id="livestatus"><span class="pulse"></span>live</div>
+        <button class="account-btn" id="accountBtn" onclick="openAuthModal()">sign in</button>
+      </div>
     </div>
     <div class="ds-banner" id="dsbanner">⏳ initialising...</div>
     <div class="section"><div class="label">going to</div><div class="destgrid" id="destgrid"></div></div>
@@ -200,21 +174,67 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
       <div class="legrow"><span class="dot" style="background:transparent;border:2px solid #8a8273"></span> predicted</div>
     </div>
   </div>
-  <nav class="tabnav">
-    <button id="tab-list" class="active" onclick="switchTab('list')">
-      <span class="tabicon">☰</span>List
-    </button>
-    <button id="tab-map" onclick="switchTab('map')">
-      <span class="tabicon">◎</span>Map
-    </button>
-  </nav>
+</div>
+
+<!-- Auth modal -->
+<div class="modal-bg" id="authModal" onclick="if(event.target.id==='authModal')closeAuthModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuthModal()">×</button>
+    <h2>parkly<span class="dot">.</span></h2>
+    <div class="tagline">sign in to save & manage bookings</div>
+    <div class="input-group">
+      <label for="authEmail">email</label>
+      <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="input-group">
+      <label for="authPw">password</label>
+      <input type="password" id="authPw" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="modal-btn" onclick="signIn()">continue</button>
+    <div class="modal-note">accounts & bookings stored securely · new email? we'll auto-create an account</div>
+  </div>
+</div>
+
+<!-- Bookings modal -->
+<div class="modal-bg" id="bookingsModal" onclick="if(event.target.id==='bookingsModal')closeBookingsModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBookingsModal()">×</button>
+    <h2>your bookings</h2>
+    <div class="tagline" id="bkUser"></div>
+    <div id="bookingsList"></div>
+    <div class="modal-section">
+      <button class="modal-btn" style="background:#fff;color:#1a1916;border:1px solid #e8e0d4" onclick="signOut()">sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- Booking confirmation modal -->
+<div class="modal-bg" id="bookModal" onclick="if(event.target.id==='bookModal')closeBookModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBookModal()">×</button>
+    <h2>confirm booking</h2>
+    <div class="tagline">review & reserve your bay</div>
+    <div id="bookDetails"></div>
+    <div class="input-group" style="margin-top:16px">
+      <label for="bookDuration">duration</label>
+      <select id="bookDuration" style="padding:11px 13px;border:1px solid #e8e0d4;border-radius:8px;font-family:'Fraunces',serif;font-size:14px;background:#fff;outline:none;cursor:pointer">
+        <option value="1">1 hour</option>
+        <option value="2" selected>2 hours</option>
+        <option value="3">3 hours</option>
+        <option value="4">4 hours</option>
+        <option value="8">all day (8 hours)</option>
+      </select>
+    </div>
+    <button class="modal-btn" onclick="confirmBooking()">confirm & reserve</button>
+    <div class="modal-note">no payment processed · reservation held for the duration selected</div>
+  </div>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════════════════════
-const TFNSW_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJWM053Y014Y3FzbWtKNTcyZ09SZi1rS3YtVXNNZnlhQXhGdkRyUEdIQTFRIiwiaWF0IjoxNzc2NTU1NzA0fQ.A_SIU3NKLXpHbrtfilRpa952yHQqg-rmDN8_SyvJH-8';
+const TFNSW_API_KEY = 'YOUR_KEY_HERE';
 const PROXY_URL     = 'http://localhost:8787';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -276,13 +296,7 @@ const DESTS = [
 // MOCK SPOTS — commercial/street parking for destinations not covered by TfNSW API
 // ═══════════════════════════════════════════════════════════════════════
 const MOCK_SPOTS = [
-  // Sydney CBD
-  { id:'cbd-1', name:'Wilson Pitt St',        dest:'cbd',  lat:-33.8705, lng:151.2075, type:'commercial', capacity:340, source:'derived',   rate:22, premiumRate:14, walkMin:2,  baselineBusy:0.85 },
-  { id:'cbd-2', name:'Secure Goulburn St',    dest:'cbd',  lat:-33.8790, lng:151.2080, type:'commercial', capacity:280, source:'derived',   rate:18, premiumRate:12, walkMin:5,  baselineBusy:0.70 },
-  { id:'cbd-3', name:'Kent St (street)',      dest:'cbd',  lat:-33.8678, lng:151.2055, type:'street',     capacity:24,  source:'derived',   rate:6,  premiumRate:6,  walkMin:6,  baselineBusy:0.90 },
-  { id:'cbd-4', name:'The Rocks Car Park',    dest:'cbd',  lat:-33.8600, lng:151.2090, type:'commercial', capacity:410, source:'derived',   rate:20, premiumRate:13, walkMin:9,  baselineBusy:0.60 },
-  { id:'cbd-5', name:'Wynyard Ln (street)',   dest:'cbd',  lat:-33.8668, lng:151.2060, type:'street',     capacity:12,  source:'predicted', rate:7,  premiumRate:7,  walkMin:3,  baselineBusy:0.95 },
-  { id:'cbd-6', name:'QVB Underground',       dest:'cbd',  lat:-33.8720, lng:151.2069, type:'commercial', capacity:220, source:'derived',   rate:19, premiumRate:13, walkMin:4,  baselineBusy:0.75 },
+  // CBD now handled by OFFSTREET_CBD below — 76 real commercial lots from City of Sydney
   // Bondi
   { id:'bon-1', name:'Campbell Pde (street)', dest:'bondi',lat:-33.8914, lng:151.2768, type:'street',     capacity:60,  source:'derived',   rate:5,  premiumRate:5,  walkMin:2,  baselineBusy:0.92 },
   { id:'bon-2', name:'Bondi Pavilion Lot',    dest:'bondi',lat:-33.8911, lng:151.2780, type:'commercial', capacity:180, source:'derived',   rate:8,  premiumRate:6,  walkMin:4,  baselineBusy:0.85 },
@@ -306,6 +320,90 @@ const MOCK_SPOTS = [
   { id:'w-1', name:'Westfield Penrith',       dest:'west',  lat:-33.7527, lng:150.6937, type:'commercial', capacity:2300, source:'derived', rate:2, premiumRate:0, walkMin:3, baselineBusy:0.60 },
   // Southern
   { id:'s-1', name:'Westfield Hurstville',    dest:'south', lat:-33.9671, lng:151.1022, type:'commercial', capacity:1800, source:'derived', rate:4, premiumRate:2, walkMin:5, baselineBusy:0.70 },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// OFF-STREET CBD PARKING — REAL DATA from City of Sydney
+// Source: opendata.transport.nsw.gov.au · "Off-Street Parking" dataset
+// 76 commercial parking garages across Sydney CBD, 21,438 total bays
+// ═══════════════════════════════════════════════════════════════════════
+const OFFSTREET_CBD = [
+  { owner:'Wilson', name:'Sydney Opera House', lat:-33.858784, lng:151.213782, capacity:1153, rate:22, premiumRate:14 },
+  { owner:'InterPark', name:'Domain', lat:-33.871496, lng:151.214973, capacity:1079, rate:18, premiumRate:10 },
+  { owner:'Cinema Centre', name:'521 Kent Street', lat:-33.874815, lng:151.205098, capacity:893, rate:18, premiumRate:10 },
+  { owner:'Secure', name:'528 Kent Street', lat:-33.876114, lng:151.205526, capacity:893, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Darling Park', lat:-33.871833, lng:151.203818, capacity:834, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'Goulburn Street Parking Station', lat:-33.878521, lng:151.208926, capacity:735, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Citipark', lat:-33.871233, lng:151.204824, capacity:643, rate:22, premiumRate:14 },
+  { owner:'Sun Parking', name:'261-293 Kent Street', lat:-33.866360, lng:151.204239, capacity:642, rate:18, premiumRate:10 },
+  { owner:'Wilson', name:'Queen Victoria Building', lat:-33.871104, lng:151.206304, capacity:634, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Governor Phillip Tower', lat:-33.864382, lng:151.211581, capacity:629, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Market City - Level B2/B3', lat:-33.879596, lng:151.202497, capacity:619, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Market City - Level B1', lat:-33.879596, lng:151.202497, capacity:619, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Quay West', lat:-33.861632, lng:151.207061, capacity:600, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Novatel', lat:-33.881878, lng:151.202624, capacity:589, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Darling Quarter', lat:-33.874590, lng:151.203005, capacity:588, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Grosvenor Place', lat:-33.862280, lng:151.207327, capacity:552, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'Hilton', lat:-33.872030, lng:151.208120, capacity:429, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Australia Square', lat:-33.864761, lng:151.208168, capacity:380, rate:22, premiumRate:14 },
+  { owner:'Metro Parking Management', name:'Sydney Eye Hospital', lat:-33.868005, lng:151.212374, capacity:377, rate:18, premiumRate:10 },
+  { owner:'Secure', name:'No 1 Martin Place', lat:-33.868260, lng:151.208310, capacity:368, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'The Chifley Tower', lat:-33.865398, lng:151.211869, capacity:362, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'World Square (Goulbourn Street)', lat:-33.877788, lng:151.206064, capacity:359, rate:22, premiumRate:14 },
+  { owner:'Enacom', name:'Cathedral Street', lat:-33.871852, lng:151.213841, capacity:335, rate:18, premiumRate:10 },
+  { owner:'Wynyard Properties', name:'Wynyard Lane', lat:-33.866109, lng:151.206804, capacity:323, rate:18, premiumRate:10 },
+  { owner:'Wilson', name:'321 Kent Street', lat:-33.867253, lng:151.203422, capacity:319, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Barangaroo Reserve Car Park', lat:-33.856529, lng:151.202301, capacity:300, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'Allianz Centre', lat:-33.870507, lng:151.203784, capacity:288, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'MLC Centre Car Park', lat:-33.868917, lng:151.208857, capacity:285, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Citigroup Centre', lat:-33.871983, lng:151.208106, capacity:275, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'175 Liverpool St', lat:-33.877725, lng:151.210211, capacity:266, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Angel Place Car Park', lat:-33.866707, lng:151.208430, capacity:260, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'St Andrew\'s House', lat:-33.873654, lng:151.205318, capacity:243, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'Piccadilly', lat:-33.871447, lng:151.209373, capacity:231, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Gateway', lat:-33.861960, lng:151.209447, capacity:195, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Barangaroo Point car park', lat:-33.857290, lng:151.202840, capacity:188, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'Sofitel Wentworth Hotel', lat:-33.865404, lng:151.210700, capacity:173, rate:22, premiumRate:14 },
+  { owner:'InterPark', name:'Bond Store One', lat:-33.857161, lng:151.203845, capacity:173, rate:15, premiumRate:7 },
+  { owner:'Wilson', name:'St Martins Tower', lat:-33.871231, lng:151.205765, capacity:163, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'Met Centre', lat:-33.864362, lng:151.206949, capacity:155, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'King Street Wharf', lat:-33.866525, lng:151.202385, capacity:154, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'HSBC Centre', lat:-33.875166, lng:151.207033, capacity:137, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'60 Elizabeth St', lat:-33.868221, lng:151.210657, capacity:135, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Clocktower Car Park', lat:-33.860166, lng:151.207765, capacity:132, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'155 George Street', lat:-33.860993, lng:151.208360, capacity:131, rate:22, premiumRate:14 },
+  { owner:'Capitol Square', name:'Capitol Square', lat:-33.879255, lng:151.205845, capacity:130, rate:15, premiumRate:7 },
+  { owner:'Wilson', name:'259 George Street', lat:-33.863999, lng:151.206037, capacity:119, rate:22, premiumRate:14 },
+  { owner:'Mercure Hotel', name:'Mercure Hotel', lat:-33.884225, lng:151.203006, capacity:118, rate:15, premiumRate:7 },
+  { owner:'Enacom', name:'Intercontinental Hotel', lat:-33.863041, lng:151.212010, capacity:116, rate:15, premiumRate:7 },
+  { owner:'Sheraton', name:'Sheraton', lat:-33.871762, lng:151.209439, capacity:115, rate:15, premiumRate:7 },
+  { owner:'Wilson', name:'Gold Fields House', lat:-33.861878, lng:151.209166, capacity:114, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'109 Pitt Street', lat:-33.866221, lng:151.208246, capacity:112, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'55 Clarence Street', lat:-33.864926, lng:151.204224, capacity:111, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'ADC House', lat:-33.863300, lng:151.203935, capacity:110, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'6-10 O\'Connell Street', lat:-33.864903, lng:151.210064, capacity:108, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'Overseas Passenger Terminal', lat:-33.859262, lng:151.208829, capacity:102, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'No. 1 OConnell St Car Park', lat:-33.864400, lng:151.209767, capacity:100, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'1 Bligh Street', lat:-33.864819, lng:151.210158, capacity:100, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'Atrium', lat:-33.862483, lng:151.208610, capacity:96, rate:22, premiumRate:14 },
+  { owner:'Sir Stamford Hotel', name:'93 Macquarie Street', lat:-33.862180, lng:151.212657, capacity:94, rate:15, premiumRate:7 },
+  { owner:'Secure', name:'The Wharf', lat:-33.867380, lng:151.219385, capacity:91, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'Amora Hotel', lat:-33.864556, lng:151.206286, capacity:89, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'1 Dixon Street', lat:-33.876218, lng:151.203623, capacity:88, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'187 Thomas Street', lat:-33.881321, lng:151.203661, capacity:82, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'131 Macquarie Street', lat:-33.864016, lng:151.212448, capacity:74, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'37 Pitt Street', lat:-33.862604, lng:151.208647, capacity:74, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'The Bowlers Club', lat:-33.870119, lng:151.205565, capacity:70, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'132 Sussex Street', lat:-33.868599, lng:151.203590, capacity:60, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'383 Kent Street', lat:-33.870091, lng:151.204619, capacity:56, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'135 King St', lat:-33.869102, lng:151.208845, capacity:55, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'220 George St', lat:-33.863214, lng:151.207762, capacity:50, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'71 York Street', lat:-33.868280, lng:151.205696, capacity:38, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'201 Elizabeth St', lat:-33.873586, lng:151.209300, capacity:30, rate:22, premiumRate:14 },
+  { owner:'Secure', name:'Landmark', lat:-33.868141, lng:151.206306, capacity:29, rate:22, premiumRate:14 },
+  { owner:'Wilson', name:'121-127 Harrington Street', lat:-33.862323, lng:151.206658, capacity:27, rate:22, premiumRate:14 },
+  { owner:'Sussex Centre', name:'401 Sussex Street', lat:-33.878239, lng:151.204691, capacity:22, rate:15, premiumRate:7 },
+  { owner:'Wilson', name:'44 Market St', lat:-33.870599, lng:151.205553, capacity:20, rate:22, premiumRate:14 },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -354,9 +452,235 @@ const SCOL = { green:'#1a7f3a', yellow:'#c78200', red:'#c23434' };
 // STATE
 // ═══════════════════════════════════════════════════════════════════════
 let state = { dest:'cbd', hour:11, day:'sat', weather:'sunny', event:false, premium:false, tick:0 };
+
+// ═══════════════════════════════════════════════════════════════════════
+// AUTH + BOOKINGS — backed by backend.py (http://localhost:8788)
+// Falls back gracefully if backend is offline
+// ═══════════════════════════════════════════════════════════════════════
+const BACKEND_URL = 'http://localhost:8788';
+
+let currentUser = null;   // { email, user_id }
+let authToken = null;     // session token from backend
+let bookings = [];        // fetched from backend
+let pendingBookSpot = null;
+let backendOnline = false;
+
+async function api(path, method='GET', body=null) {
+  const opts = { method, headers: {'Content-Type':'application/json'} };
+  if (authToken) opts.headers['X-Parkly-Token'] = authToken;
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(BACKEND_URL + path, opts);
+  backendOnline = true;
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({error: 'Server error'}));
+    throw new Error(err.error || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+function loadAuthState() {
+  // Restore token from sessionStorage if present
+  try {
+    const t = sessionStorage.getItem('parkly_token');
+    const u = sessionStorage.getItem('parkly_user');
+    if (t) authToken = t;
+    if (u) currentUser = JSON.parse(u);
+  } catch (e) {}
+}
+function saveAuthState() {
+  try {
+    if (authToken) sessionStorage.setItem('parkly_token', authToken);
+    else sessionStorage.removeItem('parkly_token');
+    if (currentUser) sessionStorage.setItem('parkly_user', JSON.stringify(currentUser));
+    else sessionStorage.removeItem('parkly_user');
+  } catch (e) {}
+}
+
+function updateAccountBtn() {
+  const btn = document.getElementById('accountBtn');
+  if (currentUser) {
+    const initial = currentUser.email[0].toUpperCase();
+    const activeCount = bookings.filter(b => b.status === 'active').length;
+    btn.className = 'account-btn signed-in';
+    btn.innerHTML = `<span class="account-avatar">${initial}</span><span class="account-email">${activeCount} booking${activeCount===1?'':'s'}</span>`;
+    btn.onclick = openBookingsModal;
+  } else {
+    btn.className = 'account-btn';
+    btn.innerHTML = 'sign in';
+    btn.onclick = openAuthModal;
+  }
+}
+
+function openAuthModal() {
+  document.getElementById('authModal').classList.add('show');
+  setTimeout(() => document.getElementById('authEmail').focus(), 100);
+}
+function closeAuthModal() {
+  document.getElementById('authModal').classList.remove('show');
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPw').value = '';
+}
+
+async function signIn() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pw = document.getElementById('authPw').value;
+  if (!email || !email.includes('@')) { alert('please enter a valid email'); return; }
+  if (pw.length < 4) { alert('password must be at least 4 characters'); return; }
+  try {
+    const resp = await api('/login', 'POST', { email, password: pw });
+    authToken = resp.token;
+    currentUser = resp.user;
+    saveAuthState();
+    await refreshBookings();
+    updateAccountBtn();
+    closeAuthModal();
+  } catch (err) {
+    alert('Sign in failed: ' + err.message + '\n\nMake sure backend.py is running on localhost:8788');
+  }
+}
+
+async function signOut() {
+  try { await api('/logout', 'POST'); } catch (e) {}
+  authToken = null;
+  currentUser = null;
+  bookings = [];
+  saveAuthState();
+  updateAccountBtn();
+  closeBookingsModal();
+}
+
+async function refreshBookings() {
+  if (!currentUser) { bookings = []; return; }
+  try {
+    const resp = await api('/bookings');
+    // normalize field names to match UI
+    bookings = resp.map(b => ({
+      id: b.booking_id,
+      spotName: b.spot_name,
+      startMs: b.start_ms,
+      durationHrs: b.duration_hrs,
+      price: b.price,
+      status: b.status,
+    }));
+  } catch (e) {
+    console.warn('Failed to fetch bookings:', e);
+  }
+}
+
+function openBookingsModal() {
+  refreshBookings().then(() => {
+    renderBookingsList();
+    document.getElementById('bkUser').textContent = currentUser ? currentUser.email : '';
+    document.getElementById('bookingsModal').classList.add('show');
+    updateAccountBtn();
+  });
+}
+function closeBookingsModal() { document.getElementById('bookingsModal').classList.remove('show'); }
+
+function renderBookingsList() {
+  const active = bookings.filter(b => b.status === 'active').sort((a,b) => a.startMs - b.startMs);
+  const past = bookings.filter(b => b.status !== 'active').sort((a,b) => b.startMs - a.startMs).slice(0, 5);
+  const list = document.getElementById('bookingsList');
+  if (active.length === 0 && past.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="big">no bookings yet</div>book a bay from the recommendation card to see it here</div>';
+    return;
+  }
+  let html = '';
+  if (active.length > 0) {
+    html += '<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:#6b655a;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px">active · ' + active.length + '</div>';
+    active.forEach(b => html += bookingRow(b, true));
+  }
+  if (past.length > 0) {
+    html += '<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:#6b655a;text-transform:uppercase;letter-spacing:0.1em;margin:18px 0 10px">past</div>';
+    past.forEach(b => html += bookingRow(b, false));
+  }
+  list.innerHTML = html;
+}
+
+function bookingRow(b, active) {
+  const start = new Date(b.startMs);
+  const endMs = b.startMs + b.durationHrs * 3600 * 1000;
+  const fmt = d => d.toLocaleString('en-AU', { weekday:'short', hour:'2-digit', minute:'2-digit', day:'numeric', month:'short' });
+  const remaining = active
+    ? `ends ${new Date(endMs).toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'})} · ${Math.max(0, Math.round((endMs - Date.now())/60000))} min left`
+    : fmt(start);
+  return `<div class="booking-item">
+    <div class="booking-head">
+      <div class="booking-name">${b.spotName}</div>
+      <div class="booking-status ${active?'active':'past'}">${active?'active':'completed'}</div>
+    </div>
+    <div class="booking-meta">${b.id} · ${b.durationHrs}h · $${b.price.toFixed ? b.price.toFixed(2) : b.price} · ${remaining}</div>
+    ${active ? `<div class="booking-actions">
+      <button class="booking-action" onclick="extendBooking('${b.id}')">extend 1h</button>
+      <button class="booking-action danger" onclick="cancelBooking('${b.id}')">cancel</button>
+    </div>` : ''}
+  </div>`;
+}
+
+async function extendBooking(id) {
+  try {
+    const resp = await api('/bookings/' + id + '/extend', 'POST');
+    const b = bookings.find(x => x.id === id);
+    if (b) { b.durationHrs = resp.duration_hrs; b.price = resp.price; }
+    renderBookingsList();
+    updateAccountBtn();
+  } catch (e) { alert('Extend failed: ' + e.message); }
+}
+
+async function cancelBooking(id) {
+  if (!confirm('cancel this booking?')) return;
+  try {
+    await api('/bookings/' + id, 'DELETE');
+    bookings = bookings.filter(x => x.id !== id);
+    renderBookingsList();
+    updateAccountBtn();
+  } catch (e) { alert('Cancel failed: ' + e.message); }
+}
+
+function openBookModal(spot) {
+  if (!currentUser) { openAuthModal(); return; }
+  pendingBookSpot = spot;
+  const price = state.premium ? spot.premiumRate : spot.rate;
+  document.getElementById('bookDetails').innerHTML = `
+    <div style="background:#fff;border:1px solid #e8e0d4;border-radius:10px;padding:14px 16px;margin-top:10px">
+      <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin-bottom:4px">${spot.name}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6b655a">${spot.walkMin}m walk · ${Math.round(spot.availability*100)}% free · $${price}/hr</div>
+    </div>`;
+  document.getElementById('bookModal').classList.add('show');
+}
+function closeBookModal() { document.getElementById('bookModal').classList.remove('show'); pendingBookSpot = null; }
+
+async function confirmBooking() {
+  if (!pendingBookSpot || !currentUser) return;
+  const hrs = parseInt(document.getElementById('bookDuration').value);
+  const price = (state.premium ? pendingBookSpot.premiumRate : pendingBookSpot.rate) * hrs;
+  try {
+    const resp = await api('/reserve', 'POST', {
+      spot_id: pendingBookSpot.id || '',
+      spot_name: pendingBookSpot.name,
+      dest: state.dest,
+      duration_hrs: hrs,
+      price: price,
+      start_ms: Date.now(),
+    });
+    bookings.unshift({
+      id: resp.booking_id,
+      spotName: resp.spot_name,
+      startMs: resp.start_ms,
+      durationHrs: resp.duration_hrs,
+      price: resp.price,
+      status: 'active',
+    });
+    updateAccountBtn();
+    closeBookModal();
+    openBookingsModal();
+  } catch (e) {
+    alert('Booking failed: ' + e.message + '\n\nMake sure backend.py is running on localhost:8788');
+  }
+}
 let liveFacilities = {};  // keyed by facility_id
 let dataSource = 'init';
-let map, spotLayer, destMarker, currentBest;
+let map, spotLayer, destMarker;
 
 // ═══════════════════════════════════════════════════════════════════════
 // TFNSW CLIENT
@@ -481,6 +805,30 @@ function buildSpotsForDestination(destId) {
   // 2. Mock spots for this destination (commercial/street)
   MOCK_SPOTS.filter(s => s.dest === destId).forEach(s => spots.push({...s}));
 
+  // 3. Real CBD off-street parking from City of Sydney dataset (76 lots)
+  if (destId === 'cbd') {
+    OFFSTREET_CBD.forEach(lot => {
+      const walkMin = estWalkMin({lat:lot.lat, lng:lot.lng}, dest);
+      // Skip lots too far from destination centre (>2km = not useful walk)
+      if (walkMin > 25) return;
+      spots.push({
+        id: `cbd-real-${lot.name.replace(/[^a-z0-9]/gi,'').slice(0,20)}-${Math.round(lot.lat*1000)}`,
+        name: `${lot.owner} · ${lot.name}`,
+        dest: 'cbd',
+        lat: lot.lat,
+        lng: lot.lng,
+        type: 'commercial',
+        capacity: lot.capacity,
+        source: 'derived',
+        rate: lot.rate,
+        premiumRate: lot.premiumRate,
+        walkMin,
+        baselineBusy: 0.75,
+        _realSource: 'City of Sydney Off-Street Parking dataset',
+      });
+    });
+  }
+
   return spots;
 }
 
@@ -548,6 +896,7 @@ function destIcon(d) {
   return L.divIcon({ className:'', html:`<div class="destpin">${d.icon}</div>`, iconSize:[36,36], iconAnchor:[18,18] });
 }
 
+let lastFitDest = null;
 function renderMap(spots, best) {
   spotLayer.clearLayers();
   const dest = DESTS.find(d => d.id === state.dest);
@@ -560,8 +909,12 @@ function renderMap(spots, best) {
     m.bindPopup(`<div class="popn">${s.name}</div><div class="popd">${Math.round(s.availability*100)}% free · ${s.walkMin}m walk · ${price}</div>`);
     m.addTo(spotLayer);
   });
-  const bounds = L.latLngBounds([[dest.lat, dest.lng], ...spots.slice(0, 4).map(s => [s.lat, s.lng])]);
-  if (bounds.isValid()) map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
+  // Only auto-fit bounds when destination CHANGES (not on every re-render/refresh tick)
+  if (lastFitDest !== state.dest) {
+    const bounds = L.latLngBounds([[dest.lat, dest.lng], ...spots.slice(0, 4).map(s => [s.lat, s.lng])]);
+    if (bounds.isValid()) map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
+    lastFitDest = state.dest;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -569,9 +922,10 @@ function renderMap(spots, best) {
 // ═══════════════════════════════════════════════════════════════════════
 function render() {
   const raw = buildSpotsForDestination(state.dest);
-  const spots = raw.map(computeStatus).map(s => ({...s, score: score(s)})).sort((a,b) => b.score - a.score);
+  const allSpots = raw.map(computeStatus).map(s => ({...s, score: score(s)})).sort((a,b) => b.score - a.score);
+  const spots = allSpots.slice(0, 8);  // top 8 for sidebar list
 
-  if (spots.length === 0) {
+  if (allSpots.length === 0) {
     document.getElementById('hero').innerHTML = '';
     document.getElementById('list').innerHTML = '<div class="loading">no spots loaded yet · waiting for TfNSW data...</div>';
     renderMap([], {id:''});
@@ -579,14 +933,13 @@ function render() {
   }
 
   const best = spots[0];
-  currentBest = best;
   const dest = DESTS.find(d => d.id === state.dest);
   const p = state.premium;
   const heroPrice = best.rate === 0 ? 'free' : `$${p ? best.premiumRate : best.rate}/hr`;
   const premSave = p && best.premiumRate < best.rate;
 
   document.getElementById('hero').innerHTML = `
-    <div class="heroL">recommended · #1 of ${spots.length}</div>
+    <div class="heroL">recommended · #1 of ${allSpots.length} (showing top 8)</div>
     <div class="hero">
       <div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:10px">
         <div>
@@ -602,7 +955,7 @@ function render() {
         <div><div class="stat-l">price</div><div class="stat-v ${premSave?'prem':''}">${heroPrice}</div><div class="stat-h">${premSave?`save $${best.rate-best.premiumRate}/hr`:'hourly'}</div></div>
       </div>
       <div class="reason"><span class="reason-l">why:</span>${best.reason}${best.busyFlag?'<span class="busyf">⚠ usually busy</span>':''}</div>
-      <button class="book" id="reserveBtn" onclick="openReserveModal(currentBest)">reserve a bay →</button>
+      <button class="book" onclick='openBookModal(${JSON.stringify({name: best.name, walkMin: best.walkMin, availability: best.availability, rate: best.rate, premiumRate: best.premiumRate}).replace(/'/g, "&#39;")})'>reserve a bay →</button>
     </div>`;
 
   document.getElementById('list').innerHTML = spots.map((s,i) => {
@@ -633,7 +986,7 @@ function render() {
     };
   });
 
-  renderMap(spots, best);
+  renderMap(allSpots, best);
 }
 
 function buildDests() {
@@ -658,29 +1011,23 @@ document.getElementById('hour').oninput = e => { state.hour = +e.target.value; d
 document.getElementById('event').onclick = e => { state.event = !state.event; e.target.classList.toggle('on'); render(); };
 document.getElementById('premium').onclick = e => { state.premium = !state.premium; e.target.classList.toggle('on'); render(); };
 
-function switchTab(tab) {
-  const isMobile = window.innerWidth <= 768;
-  if (!isMobile) return;
-  document.querySelector('.panel').classList.toggle('active', tab === 'list');
-  document.querySelector('.mapwrap').classList.toggle('active', tab === 'map');
-  document.getElementById('tab-list').classList.toggle('active', tab === 'list');
-  document.getElementById('tab-map').classList.toggle('active', tab === 'map');
-  if (tab === 'map') map.invalidateSize();
-}
-
-function initMobile() {
-  if (window.innerWidth <= 768) {
-    document.querySelector('.panel').classList.add('active');
-    document.querySelector('.mapwrap').classList.remove('active');
-  } else {
-    document.querySelector('.panel').classList.remove('active');
-    document.querySelector('.mapwrap').classList.remove('active');
-  }
-}
-
 (async function() {
+  loadAuthState();
+  updateAccountBtn();
+  // If we have a saved token, fetch user's bookings from backend
+  if (authToken && currentUser) {
+    try {
+      await refreshBookings();
+      updateAccountBtn();
+    } catch (e) {
+      // Token might be invalid/expired or backend offline — clear silently
+      authToken = null;
+      currentUser = null;
+      saveAuthState();
+      updateAccountBtn();
+    }
+  }
   initMap();
-  initMobile();
   buildDays();
   buildWeather();
   buildDests();
@@ -691,94 +1038,6 @@ function initMobile() {
   setInterval(async () => { await refreshLiveData(); state.tick++; buildDests(); render(); }, 60000);
   setInterval(() => { state.tick++; render(); }, 4000);
 })();
-
-// ── Reservation modal ──────────────────────────────────────────
-const BACKEND = 'http://localhost:8788';
-
-function openReserveModal(best) {
-  const price = state.premium ? best.premiumRate : best.rate;
-  const priceLabel = price === 0 ? 'Free' : `$${price}/hr`;
-  const dest = DESTS.find(d => d.id === state.dest);
-
-  document.getElementById('overlay').innerHTML = `
-    <div class="modal" id="modalBox">
-      <div class="modal-title">Reserve a bay</div>
-      <div class="modal-sub">${best.name} · ${dest.name} · ${priceLabel}</div>
-      <div class="modal-field">
-        <label class="modal-label">your name</label>
-        <input class="modal-input" id="m-name" placeholder="e.g. Alex Smith" autocomplete="off">
-      </div>
-      <div class="modal-field">
-        <label class="modal-label">arrival time</label>
-        <input class="modal-input" id="m-time" value="${String(state.hour).padStart(2,'0')}:00" readonly>
-      </div>
-      <div class="modal-field">
-        <label class="modal-label">day</label>
-        <input class="modal-input" id="m-day" value="${state.day.charAt(0).toUpperCase()+state.day.slice(1)}" readonly>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-cancel" id="m-cancel">Cancel</button>
-        <button class="btn-confirm" id="m-confirm">Confirm booking →</button>
-      </div>
-    </div>`;
-
-  document.getElementById('overlay').classList.add('open');
-  document.getElementById('m-cancel').onclick = closeModal;
-  document.getElementById('overlay').onclick = e => { if (e.target.id === 'overlay') closeModal(); };
-  document.getElementById('m-confirm').onclick = () => submitBooking(best, dest, priceLabel);
-}
-
-function closeModal() {
-  document.getElementById('overlay').classList.remove('open');
-}
-
-async function submitBooking(best, dest, priceLabel) {
-  const name = document.getElementById('m-name').value.trim();
-  if (!name) { document.getElementById('m-name').focus(); return; }
-
-  document.getElementById('m-confirm').textContent = 'Booking...';
-  document.getElementById('m-confirm').disabled = true;
-
-  try {
-    const res = await fetch(`${BACKEND}/reserve`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        spot_id: best.id,
-        spot_name: best.name,
-        dest: dest.name,
-        name,
-        hour: state.hour,
-        price: priceLabel,
-      }),
-    });
-    const booking = await res.json();
-    showConfirmation(booking, best);
-  } catch {
-    // Backend not running — show a mock confirmation for demo
-    const mockId = 'PKL-' + Math.random().toString(36).slice(2,8).toUpperCase();
-    showConfirmation({ booking_id: mockId, name, spot_name: best.name }, best);
-  }
-}
-
-function showConfirmation(booking, best) {
-  document.getElementById('modalBox').innerHTML = `
-    <div class="confirm-box">
-      <div class="confirm-check">✓</div>
-      <div class="modal-title">Bay reserved!</div>
-      <div class="confirm-id">${booking.booking_id}</div>
-      <div class="confirm-msg">
-        <strong>${booking.name}</strong> · ${booking.spot_name}<br>
-        Show this code at the parking attendant.
-      </div>
-      <div class="modal-actions" style="justify-content:center;margin-top:20px">
-        <button class="btn-confirm" style="max-width:160px" onclick="closeModal()">Done</button>
-      </div>
-    </div>`;
-}
-
 </script>
-
-<div class="overlay" id="overlay"></div>
 </body>
 </html>
