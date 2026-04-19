@@ -693,7 +693,9 @@ function initMobile() {
 })();
 
 // ── Reservation modal ──────────────────────────────────────────
-const BACKEND = 'http://localhost:8788';
+const BACKEND = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8788'
+  : 'https://parklysudata2026-production.up.railway.app';
 
 function openReserveModal(best) {
   const price = state.premium ? best.premiumRate : best.rate;
