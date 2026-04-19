@@ -457,7 +457,9 @@ let state = { dest:'cbd', hour:11, day:'sat', weather:'sunny', event:false, prem
 // AUTH + BOOKINGS — backed by backend.py (http://localhost:8788)
 // Falls back gracefully if backend is offline
 // ═══════════════════════════════════════════════════════════════════════
-const BACKEND_URL = 'http://localhost:8788';
+const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8788'
+  : 'https://parklysudata2026-production.up.railway.app';
 
 let currentUser = null;   // { email, user_id }
 let authToken = null;     // session token from backend
@@ -1038,97 +1040,6 @@ document.getElementById('premium').onclick = e => { state.premium = !state.premi
   setInterval(async () => { await refreshLiveData(); state.tick++; buildDests(); render(); }, 60000);
   setInterval(() => { state.tick++; render(); }, 4000);
 })();
-<<<<<<< HEAD
-=======
-
-// ── Reservation modal ──────────────────────────────────────────
-const BACKEND = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:8788'
-  : 'https://parklysudata2026-production.up.railway.app';
-
-function openReserveModal(best) {
-  const price = state.premium ? best.premiumRate : best.rate;
-  const priceLabel = price === 0 ? 'Free' : `$${price}/hr`;
-  const dest = DESTS.find(d => d.id === state.dest);
-
-  document.getElementById('overlay').innerHTML = `
-    <div class="modal" id="modalBox">
-      <div class="modal-title">Reserve a bay</div>
-      <div class="modal-sub">${best.name} · ${dest.name} · ${priceLabel}</div>
-      <div class="modal-field">
-        <label class="modal-label">your name</label>
-        <input class="modal-input" id="m-name" placeholder="e.g. Alex Smith" autocomplete="off">
-      </div>
-      <div class="modal-field">
-        <label class="modal-label">arrival time</label>
-        <input class="modal-input" id="m-time" value="${String(state.hour).padStart(2,'0')}:00" readonly>
-      </div>
-      <div class="modal-field">
-        <label class="modal-label">day</label>
-        <input class="modal-input" id="m-day" value="${state.day.charAt(0).toUpperCase()+state.day.slice(1)}" readonly>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-cancel" id="m-cancel">Cancel</button>
-        <button class="btn-confirm" id="m-confirm">Confirm booking →</button>
-      </div>
-    </div>`;
-
-  document.getElementById('overlay').classList.add('open');
-  document.getElementById('m-cancel').onclick = closeModal;
-  document.getElementById('overlay').onclick = e => { if (e.target.id === 'overlay') closeModal(); };
-  document.getElementById('m-confirm').onclick = () => submitBooking(best, dest, priceLabel);
-}
-
-function closeModal() {
-  document.getElementById('overlay').classList.remove('open');
-}
-
-async function submitBooking(best, dest, priceLabel) {
-  const name = document.getElementById('m-name').value.trim();
-  if (!name) { document.getElementById('m-name').focus(); return; }
-
-  document.getElementById('m-confirm').textContent = 'Booking...';
-  document.getElementById('m-confirm').disabled = true;
-
-  try {
-    const res = await fetch(`${BACKEND}/reserve`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        spot_id: best.id,
-        spot_name: best.name,
-        dest: dest.name,
-        name,
-        hour: state.hour,
-        price: priceLabel,
-      }),
-    });
-    const booking = await res.json();
-    showConfirmation(booking, best);
-  } catch {
-    // Backend not running — show a mock confirmation for demo
-    const mockId = 'PKL-' + Math.random().toString(36).slice(2,8).toUpperCase();
-    showConfirmation({ booking_id: mockId, name, spot_name: best.name }, best);
-  }
-}
-
-function showConfirmation(booking, best) {
-  document.getElementById('modalBox').innerHTML = `
-    <div class="confirm-box">
-      <div class="confirm-check">✓</div>
-      <div class="modal-title">Bay reserved!</div>
-      <div class="confirm-id">${booking.booking_id}</div>
-      <div class="confirm-msg">
-        <strong>${booking.name}</strong> · ${booking.spot_name}<br>
-        Show this code at the parking attendant.
-      </div>
-      <div class="modal-actions" style="justify-content:center;margin-top:20px">
-        <button class="btn-confirm" style="max-width:160px" onclick="closeModal()">Done</button>
-      </div>
-    </div>`;
-}
-
->>>>>>> b694a66198bb72644efb677e0cd9ae59cbf5c54d
 </script>
 </body>
 </html>
