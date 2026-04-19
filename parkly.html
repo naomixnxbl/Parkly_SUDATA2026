@@ -139,6 +139,20 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
 .popn { font-weight: 600; margin-bottom: 4px; }
 .popd { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; }
 .loading { padding: 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8a8273; }
+.dest-search-wrap { display:flex; gap:6px; }
+.dest-input { flex:1; padding:10px 13px; border:1px solid #e8e0d4; border-radius:10px; font-family:'Fraunces',serif; font-size:14px; background:#fff; outline:none; transition:border 150ms; }
+.dest-input:focus { border-color:#1a1916; }
+.dest-search-btn { padding:10px 14px; background:#1a1916; color:#faf7f2; border:none; border-radius:10px; font-size:16px; cursor:pointer; }
+.dest-suggestions { background:#fff; border:1px solid #e8e0d4; border-radius:10px; overflow:hidden; margin-top:4px; display:none; }
+.dest-suggestions.show { display:block; }
+.dest-suggestion { padding:10px 13px; font-size:13px; cursor:pointer; border-bottom:1px solid #f1ebe0; }
+.dest-suggestion:last-child { border-bottom:none; }
+.dest-suggestion:hover { background:#faf5ea; }
+.dest-suggestion .sug-name { font-weight:500; }
+.dest-suggestion .sug-detail { font-family:'JetBrains Mono',monospace; font-size:10px; color:#8a8273; margin-top:2px; }
+.spot-filter-wrap { margin-bottom:10px; }
+.spot-filter { width:100%; padding:9px 13px; border:1px solid #e8e0d4; border-radius:8px; font-family:'Fraunces',serif; font-size:13px; background:#fff; outline:none; transition:border 150ms; }
+.spot-filter:focus { border-color:#1a1916; }
 
 /* ── Mobile ───────────────────────────────────────────────────── */
 .tabnav { display: none; }
@@ -207,7 +221,15 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
       </div>
     </div>
     <div class="ds-banner" id="dsbanner">⏳ initialising...</div>
-    <div class="section"><div class="label">going to</div><div class="destgrid" id="destgrid"></div></div>
+    <div class="section">
+      <div class="label">going to</div>
+      <div class="dest-search-wrap">
+        <input id="dest-input" class="dest-input" type="text" placeholder="Search any Sydney address…" autocomplete="off" spellcheck="false">
+        <button class="dest-search-btn" id="dest-search-btn" onclick="searchDestination()">→</button>
+      </div>
+      <div id="dest-suggestions" class="dest-suggestions"></div>
+      <div class="destgrid" id="destgrid" style="margin-top:8px"></div>
+    </div>
     <div class="section">
       <div class="label">context</div>
       <div class="ctrls">
@@ -218,7 +240,12 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
       </div>
     </div>
     <div id="hero"></div>
-    <div class="label">all options, ranked</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div class="label" style="margin-bottom:0">all options, ranked</div>
+    </div>
+    <div class="spot-filter-wrap">
+      <input id="spot-filter" class="spot-filter" type="text" placeholder="Filter by parking lot name…" autocomplete="off">
+    </div>
     <div class="list" id="list"><div class="loading">loading spots...</div></div>
   </div>
   <div class="mapwrap">
@@ -516,6 +543,89 @@ const SCOL = { green:'#1a7f3a', yellow:'#c78200', red:'#c23434' };
 // STATE
 // ═══════════════════════════════════════════════════════════════════════
 let state = { dest:'cbd', hour:11, day:'sat', weather:'sunny', event:false, premium:false, tick:0 };
+let customDest = null;   // { lat, lng, name } set by address search
+let spotFilter = '';     // text filter for parking lot names
+
+// ── Haversine distance (km) ─────────────────────────────────────
+function distKm(lat1, lng1, lat2, lng2) {
+  const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ── Nominatim geocoding (free, no key needed) ────────────────────
+async function geocodeAddress(query) {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query+', Sydney, NSW, Australia')}&format=json&limit=5&countrycodes=au`;
+  const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+  return res.json();
+}
+
+async function searchDestination() {
+  const query = document.getElementById('dest-input').value.trim();
+  if (!query) return;
+  const btn = document.getElementById('dest-search-btn');
+  btn.textContent = '…';
+  btn.disabled = true;
+  try {
+    const results = await geocodeAddress(query);
+    if (!results.length) {
+      showSuggestions([]);
+      alert('Address not found. Try something like "Surry Hills" or "Parramatta".');
+      return;
+    }
+    showSuggestions(results);
+  } catch {
+    alert('Search failed. Check your internet connection.');
+  } finally {
+    btn.textContent = '→';
+    btn.disabled = false;
+  }
+}
+
+function showSuggestions(results) {
+  const box = document.getElementById('dest-suggestions');
+  if (!results.length) { box.classList.remove('show'); return; }
+  box.innerHTML = results.map((r, i) => {
+    const name = r.display_name.split(',').slice(0,2).join(',');
+    const detail = r.display_name.split(',').slice(2,4).join(',').trim();
+    return `<div class="dest-suggestion" onclick="selectSuggestion(${i})">
+      <div class="sug-name">${name}</div>
+      <div class="sug-detail">${detail}</div>
+    </div>`;
+  }).join('');
+  box.dataset.results = JSON.stringify(results);
+  box.classList.add('show');
+}
+
+function selectSuggestion(i) {
+  const results = JSON.parse(document.getElementById('dest-suggestions').dataset.results);
+  const r = results[i];
+  const name = r.display_name.split(',').slice(0,2).join(',').trim();
+  customDest = { lat: parseFloat(r.lat), lng: parseFloat(r.lon), name };
+  document.getElementById('dest-input').value = name;
+  document.getElementById('dest-suggestions').classList.remove('show');
+  // deselect quick-pick buttons
+  document.querySelectorAll('.dest').forEach(b => b.classList.remove('on'));
+  render();
+  map.setView([customDest.lat, customDest.lng], 15, { animate: true });
+}
+
+// Close suggestions when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dest-search-wrap') && !e.target.closest('.dest-suggestions'))
+    document.getElementById('dest-suggestions').classList.remove('show');
+});
+
+// Search on Enter key
+document.getElementById('dest-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') searchDestination();
+});
+
+// Spot name filter
+document.getElementById('spot-filter').addEventListener('input', e => {
+  spotFilter = e.target.value.toLowerCase().trim();
+  render();
+});
 
 // ═══════════════════════════════════════════════════════════════════════
 // AUTH + BOOKINGS — backed by backend.py (http://localhost:8788)
@@ -987,19 +1097,34 @@ function renderMap(spots, best) {
 // RENDER
 // ═══════════════════════════════════════════════════════════════════════
 function render() {
-  const raw = buildSpotsForDestination(state.dest);
-  const allSpots = raw.map(computeStatus).map(s => ({...s, score: score(s)})).sort((a,b) => b.score - a.score);
-  const spots = allSpots.slice(0, 8);  // top 8 for sidebar list
+  // Build spots — custom address search or fixed destination
+  let raw;
+  let dest;
+  if (customDest) {
+    // Pull all spots across every destination, recalculate walkMin by real distance
+    raw = DESTS.flatMap(d => buildSpotsForDestination(d.id)).map(s => {
+      const km = distKm(customDest.lat, customDest.lng, s.lat, s.lng);
+      return { ...s, walkMin: Math.round(km * 13), dest: 'custom' }; // ~13 min/km walking
+    }).filter(s => distKm(customDest.lat, customDest.lng, s.lat, s.lng) <= 2.5); // within 2.5km
+    dest = { name: customDest.name, lat: customDest.lat, lng: customDest.lng };
+  } else {
+    raw = buildSpotsForDestination(state.dest);
+    dest = DESTS.find(d => d.id === state.dest);
+  }
+
+  // Apply parking lot name filter
+  const filtered = spotFilter ? raw.filter(s => s.name.toLowerCase().includes(spotFilter)) : raw;
+  const allSpots = filtered.map(computeStatus).map(s => ({...s, score: score(s)})).sort((a,b) => b.score - a.score);
+  const spots = allSpots.slice(0, 8);
 
   if (allSpots.length === 0) {
     document.getElementById('hero').innerHTML = '';
-    document.getElementById('list').innerHTML = '<div class="loading">no spots loaded yet · waiting for TfNSW data...</div>';
+    document.getElementById('list').innerHTML = `<div class="loading">${spotFilter ? 'no spots match that name' : 'no spots loaded yet · waiting for TfNSW data...'}</div>`;
     renderMap([], {id:''});
     return;
   }
 
   const best = spots[0];
-  const dest = DESTS.find(d => d.id === state.dest);
   const p = state.premium;
   const heroPrice = best.rate === 0 ? 'free' : `$${p ? best.premiumRate : best.rate}/hr`;
   const premSave = p && best.premiumRate < best.rate;
@@ -1061,7 +1186,13 @@ function buildDests() {
     const tracked = rawSpots.filter(s => s._live).length;
     return `<button class="dest ${state.dest===d.id?'on':''}" data-id="${d.id}">${d.icon} ${d.name}<div class="c">${tracked > 0 ? `${tracked} live · ` : ''}${rawSpots.length} spots</div></button>`;
   }).join('');
-  document.querySelectorAll('.dest').forEach(b => b.onclick = () => { state.dest = b.dataset.id; buildDests(); render(); });
+  document.querySelectorAll('.dest').forEach(b => b.onclick = () => {
+    state.dest = b.dataset.id;
+    customDest = null;
+    document.getElementById('dest-input').value = '';
+    buildDests();
+    render();
+  });
 }
 function buildDays() {
   const days = ['mon','tue','wed','thu','fri','sat','sun'];
