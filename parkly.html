@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Parkly — Sydney parking, live</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -138,6 +139,61 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
 .popn { font-weight: 600; margin-bottom: 4px; }
 .popd { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; }
 .loading { padding: 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8a8273; }
+
+/* ── Mobile ───────────────────────────────────────────────────── */
+.tabnav { display: none; }
+
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+    min-height: 100dvh;
+  }
+  .panel {
+    display: none;
+    max-height: calc(100dvh - 56px);
+    overflow-y: auto;
+    border-right: none;
+    padding: 14px;
+  }
+  .panel.mob-active { display: block; }
+  .mapwrap {
+    display: none;
+    height: calc(100dvh - 56px);
+  }
+  .mapwrap.mob-active { display: block; }
+  .tabnav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: #faf7f2;
+    border-top: 1px solid #e8e0d4;
+    z-index: 2000;
+  }
+  .tabnav button {
+    border: none;
+    background: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8a8273;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+  }
+  .tabnav button.mob-active { color: #1a1916; font-weight: 600; border-top: 2px solid #1a1916; }
+  .tabnav .tabicon { font-size: 18px; line-height: 1; }
+  .legend { bottom: 72px; }
+  .head { flex-wrap: wrap; gap: 8px; }
+  .brand-wordmark .sub { display: none; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .destgrid { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
@@ -174,6 +230,14 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
       <div class="legrow"><span class="dot" style="background:transparent;border:2px solid #8a8273"></span> predicted</div>
     </div>
   </div>
+  <nav class="tabnav">
+    <button id="tab-list" class="mob-active" onclick="switchTab('list')">
+      <span class="tabicon">☰</span>List
+    </button>
+    <button id="tab-map" onclick="switchTab('map')">
+      <span class="tabicon">◎</span>Map
+    </button>
+  </nav>
 </div>
 
 <!-- Auth modal -->
@@ -1013,6 +1077,21 @@ document.getElementById('hour').oninput = e => { state.hour = +e.target.value; d
 document.getElementById('event').onclick = e => { state.event = !state.event; e.target.classList.toggle('on'); render(); };
 document.getElementById('premium').onclick = e => { state.premium = !state.premium; e.target.classList.toggle('on'); render(); };
 
+function switchTab(tab) {
+  if (window.innerWidth > 768) return;
+  document.querySelector('.panel').classList.toggle('mob-active', tab === 'list');
+  document.querySelector('.mapwrap').classList.toggle('mob-active', tab === 'map');
+  document.getElementById('tab-list').classList.toggle('mob-active', tab === 'list');
+  document.getElementById('tab-map').classList.toggle('mob-active', tab === 'map');
+  if (tab === 'map') setTimeout(() => map.invalidateSize(), 50);
+}
+
+function initMobile() {
+  if (window.innerWidth <= 768) {
+    document.querySelector('.panel').classList.add('mob-active');
+  }
+}
+
 (async function() {
   loadAuthState();
   updateAccountBtn();
@@ -1030,6 +1109,7 @@ document.getElementById('premium').onclick = e => { state.premium = !state.premi
     }
   }
   initMap();
+  initMobile();
   buildDays();
   buildWeather();
   buildDests();
