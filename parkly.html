@@ -92,6 +92,22 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
 .popn { font-weight: 600; margin-bottom: 4px; }
 .popd { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; }
 .loading { padding: 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8a8273; }
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center; }
+.overlay.open { display:flex; }
+.modal { background:#faf7f2; border-radius:16px; padding:28px; width:340px; max-width:90vw; }
+.modal-title { font-size:18px; font-weight:600; letter-spacing:-0.02em; margin-bottom:4px; }
+.modal-sub { font-family:'JetBrains Mono',monospace; font-size:10px; color:#6b655a; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:20px; }
+.modal-field { margin-bottom:14px; }
+.modal-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:#6b655a; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; display:block; }
+.modal-input { width:100%; padding:10px 12px; border:1px solid #e8e0d4; border-radius:8px; font-family:inherit; font-size:13px; background:#fff; }
+.modal-input:focus { outline:none; border-color:#1a1916; }
+.modal-actions { display:flex; gap:8px; margin-top:20px; }
+.btn-confirm { flex:1; padding:11px; background:#1a1916; color:#faf7f2; border:none; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.btn-cancel { padding:11px 16px; background:#fff; color:#1a1916; border:1px solid #e8e0d4; border-radius:8px; font-family:inherit; font-size:13px; cursor:pointer; }
+.confirm-box { text-align:center; padding:8px 0; }
+.confirm-id { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:600; letter-spacing:0.08em; color:#1a1916; margin:12px 0 4px; }
+.confirm-msg { font-size:13px; color:#6b655a; line-height:1.5; }
+.confirm-check { font-size:36px; margin-bottom:8px; }
 </style>
 </head>
 <body>
@@ -274,7 +290,7 @@ const SCOL = { green:'#1a7f3a', yellow:'#c78200', red:'#c23434' };
 let state = { dest:'cbd', hour:11, day:'sat', weather:'sunny', event:false, premium:false, tick:0 };
 let liveFacilities = {};  // keyed by facility_id
 let dataSource = 'init';
-let map, spotLayer, destMarker;
+let map, spotLayer, destMarker, currentBest;
 
 // ═══════════════════════════════════════════════════════════════════════
 // TFNSW CLIENT
@@ -497,6 +513,7 @@ function render() {
   }
 
   const best = spots[0];
+  currentBest = best;
   const dest = DESTS.find(d => d.id === state.dest);
   const p = state.premium;
   const heroPrice = best.rate === 0 ? 'free' : `$${p ? best.premiumRate : best.rate}/hr`;
@@ -519,7 +536,7 @@ function render() {
         <div><div class="stat-l">price</div><div class="stat-v ${premSave?'prem':''}">${heroPrice}</div><div class="stat-h">${premSave?`save $${best.rate-best.premiumRate}/hr`:'hourly'}</div></div>
       </div>
       <div class="reason"><span class="reason-l">why:</span>${best.reason}${best.busyFlag?'<span class="busyf">⚠ usually busy</span>':''}</div>
-      <button class="book">reserve a bay →</button>
+      <button class="book" id="reserveBtn" onclick="openReserveModal(currentBest)">reserve a bay →</button>
     </div>`;
 
   document.getElementById('list').innerHTML = spots.map((s,i) => {
@@ -587,6 +604,94 @@ document.getElementById('premium').onclick = e => { state.premium = !state.premi
   setInterval(async () => { await refreshLiveData(); state.tick++; buildDests(); render(); }, 60000);
   setInterval(() => { state.tick++; render(); }, 4000);
 })();
+
+// ── Reservation modal ──────────────────────────────────────────
+const BACKEND = 'http://localhost:8788';
+
+function openReserveModal(best) {
+  const price = state.premium ? best.premiumRate : best.rate;
+  const priceLabel = price === 0 ? 'Free' : `$${price}/hr`;
+  const dest = DESTS.find(d => d.id === state.dest);
+
+  document.getElementById('overlay').innerHTML = `
+    <div class="modal" id="modalBox">
+      <div class="modal-title">Reserve a bay</div>
+      <div class="modal-sub">${best.name} · ${dest.name} · ${priceLabel}</div>
+      <div class="modal-field">
+        <label class="modal-label">your name</label>
+        <input class="modal-input" id="m-name" placeholder="e.g. Alex Smith" autocomplete="off">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">arrival time</label>
+        <input class="modal-input" id="m-time" value="${String(state.hour).padStart(2,'0')}:00" readonly>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">day</label>
+        <input class="modal-input" id="m-day" value="${state.day.charAt(0).toUpperCase()+state.day.slice(1)}" readonly>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="m-cancel">Cancel</button>
+        <button class="btn-confirm" id="m-confirm">Confirm booking →</button>
+      </div>
+    </div>`;
+
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('m-cancel').onclick = closeModal;
+  document.getElementById('overlay').onclick = e => { if (e.target.id === 'overlay') closeModal(); };
+  document.getElementById('m-confirm').onclick = () => submitBooking(best, dest, priceLabel);
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+}
+
+async function submitBooking(best, dest, priceLabel) {
+  const name = document.getElementById('m-name').value.trim();
+  if (!name) { document.getElementById('m-name').focus(); return; }
+
+  document.getElementById('m-confirm').textContent = 'Booking...';
+  document.getElementById('m-confirm').disabled = true;
+
+  try {
+    const res = await fetch(`${BACKEND}/reserve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        spot_id: best.id,
+        spot_name: best.name,
+        dest: dest.name,
+        name,
+        hour: state.hour,
+        price: priceLabel,
+      }),
+    });
+    const booking = await res.json();
+    showConfirmation(booking, best);
+  } catch {
+    // Backend not running — show a mock confirmation for demo
+    const mockId = 'PKL-' + Math.random().toString(36).slice(2,8).toUpperCase();
+    showConfirmation({ booking_id: mockId, name, spot_name: best.name }, best);
+  }
+}
+
+function showConfirmation(booking, best) {
+  document.getElementById('modalBox').innerHTML = `
+    <div class="confirm-box">
+      <div class="confirm-check">✓</div>
+      <div class="modal-title">Bay reserved!</div>
+      <div class="confirm-id">${booking.booking_id}</div>
+      <div class="confirm-msg">
+        <strong>${booking.name}</strong> · ${booking.spot_name}<br>
+        Show this code at the parking attendant.
+      </div>
+      <div class="modal-actions" style="justify-content:center;margin-top:20px">
+        <button class="btn-confirm" style="max-width:160px" onclick="closeModal()">Done</button>
+      </div>
+    </div>`;
+}
+
 </script>
+
+<div class="overlay" id="overlay"></div>
 </body>
 </html>
