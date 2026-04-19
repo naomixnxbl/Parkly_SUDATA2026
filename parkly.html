@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <title>Parkly — Sydney parking, live</title>
@@ -9,33 +9,41 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Fraunces', Georgia, serif; background: #faf7f2; color: #1a1916; }
-.app { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 380px 1fr; min-height: 100vh; }
+.app { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 440px 1fr; min-height: 100vh; }
 .panel { padding: 24px; border-right: 1px solid #e8e0d4; overflow-y: auto; max-height: 100vh; background: #faf7f2; }
 .mapwrap { position: relative; height: 100vh; }
 #map { height: 100%; width: 100%; }
-.head { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid #e8e0d4; }
+.head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e8e0d4; }
 .logo { width: 40px; height: 40px; background: #1a1916; color: #faf7f2; border-radius: 10px; display: grid; place-items: center; font-size: 22px; }
 .brand { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; }
 .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
 .live { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #1a7f3a; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
-.pulse { width: 7px; height: 7px; border-radius: 50%; background: #1a7f3a; animation: pulse 1.6s infinite; }
+.live.err { color: #c23434; }
+.pulse { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 1.6s infinite; }
 @keyframes pulse { 50% { opacity: 0.4; transform: scale(1.4); } }
+.ds-banner { background: #1e4a2a; color: #a8e5be; padding: 8px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px; margin-bottom: 18px; letter-spacing: 0.02em; display: flex; justify-content: space-between; align-items: center; }
+.ds-banner.warn { background: #4d3a10; color: #f0c878; }
+.ds-banner.err { background: #4a1818; color: #f09898; }
 .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
 .section { margin-bottom: 22px; }
-.destgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.dest { padding: 10px 12px; border: 1px solid #e8e0d4; background: #fff; border-radius: 10px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; text-align: left; }
+.destgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.dest { padding: 9px 10px; border: 1px solid #e8e0d4; background: #fff; border-radius: 10px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer; text-align: left; transition: all 150ms; }
+.dest:hover { border-color: #c8c0b0; }
 .dest.on { background: #1a1916; color: #faf7f2; border-color: #1a1916; }
+.dest .c { font-family: 'JetBrains Mono', monospace; font-size: 9px; opacity: 0.6; margin-top: 2px; text-transform: uppercase; }
 .ctrls { display: grid; gap: 10px; }
 .ctrl { background: #fff; padding: 10px 12px; border-radius: 10px; border: 1px solid #e8e0d4; }
 .ctrlhead { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-.ctrlval { color: #1a1916; font-size: 12px; }
-input[type=range] { -webkit-appearance: none; width: 100%; height: 3px; background: #e8e0d4; border-radius: 2px; }
+.ctrlval { color: #1a1916; font-size: 12px; font-weight: 600; }
+input[type=range] { -webkit-appearance: none; width: 100%; height: 3px; background: #e8e0d4; border-radius: 2px; outline: none; }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: #1a1916; border-radius: 50%; cursor: pointer; border: 2px solid #faf7f2; box-shadow: 0 0 0 1px #1a1916; }
 input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a1916; border-radius: 50%; cursor: pointer; border: 2px solid #faf7f2; }
 .chips { display: flex; gap: 4px; flex-wrap: wrap; }
-.chip { padding: 4px 8px; border-radius: 5px; border: 1px solid #e8e0d4; background: #fff; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; cursor: pointer; text-transform: uppercase; }
+.chip { padding: 4px 8px; border-radius: 5px; border: 1px solid #e8e0d4; background: #fff; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; cursor: pointer; text-transform: uppercase; transition: all 150ms; }
+.chip:hover { border-color: #c8c0b0; }
 .chip.on { background: #1a1916; color: #faf7f2; border-color: #1a1916; }
-.pill { padding: 5px 9px; border-radius: 999px; border: 1px solid #e8e0d4; background: #fff; font-family: inherit; font-size: 12px; cursor: pointer; }
+.pill { padding: 6px 10px; border-radius: 999px; border: 1px solid #e8e0d4; background: #fff; font-family: inherit; font-size: 12px; cursor: pointer; transition: all 150ms; }
+.pill:hover { border-color: #c8c0b0; }
 .pill.on { background: #1a1916; color: #faf7f2; border-color: #1a1916; }
 .pill.prem.on { background: #d4a82c; color: #1a1916; border-color: #d4a82c; }
 .hero { background: #1a1916; color: #faf7f2; padding: 18px 20px; border-radius: 14px; margin-bottom: 20px; }
@@ -51,6 +59,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
 .reason-l { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #8a8273; text-transform: uppercase; letter-spacing: 0.1em; margin-right: 6px; }
 .busyf { display: inline-block; margin-left: 8px; padding: 1px 6px; background: #4a2614; color: #f0a878; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; }
 .book { width: 100%; padding: 11px; background: #faf7f2; color: #1a1916; border: none; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.book:hover { background: #fff; }
 .list { background: #fff; border: 1px solid #e8e0d4; border-radius: 10px; overflow: hidden; }
 .row { display: grid; grid-template-columns: 20px auto 1fr auto; gap: 10px; align-items: center; padding: 10px 14px; border-bottom: 1px solid #f1ebe0; cursor: pointer; transition: background 150ms; }
 .row:hover { background: #faf5ea; }
@@ -69,7 +78,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
 .old { color: #b8b0a0; text-decoration: line-through; margin-right: 4px; font-size: 11px; }
 .prem-p { color: #b8891c; }
 .free { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #1a7f3a; text-transform: uppercase; }
-.legend { position: absolute; bottom: 20px; left: 20px; background: #fff; padding: 12px 16px; border-radius: 10px; border: 1px solid #e8e0d4; box-shadow: 0 2px 12px rgba(0,0,0,0.06); z-index: 1000; }
+.legend { position: absolute; bottom: 20px; left: 20px; background: #fff; padding: 12px 16px; border-radius: 10px; border: 1px solid #e8e0d4; box-shadow: 0 2px 12px rgba(0,0,0,0.06); z-index: 1000; max-width: 260px; }
 .legtitle { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #6b655a; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
 .legrow { display: flex; align-items: center; gap: 8px; font-size: 11px; margin-bottom: 4px; }
 .legrow:last-child { margin-bottom: 0; }
@@ -82,6 +91,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
 .leaflet-popup-content { margin: 12px 14px; font-size: 13px; }
 .popn { font-weight: 600; margin-bottom: 4px; }
 .popd { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b655a; }
+.loading { padding: 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8a8273; }
 </style>
 </head>
 <body>
@@ -89,53 +99,29 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
   <div class="panel">
     <div class="head">
       <div class="logo">◐</div>
-      <div>
-        <div class="brand">parkly</div>
-        <div class="sub">sydney parking · live</div>
-      </div>
-      <div class="live"><span class="pulse"></span>live</div>
+      <div><div class="brand">parkly</div><div class="sub">sydney parking · live</div></div>
+      <div class="live" id="livestatus"><span class="pulse"></span>live</div>
     </div>
-
-    <div class="section">
-      <div class="label">going to</div>
-      <div class="destgrid" id="destgrid"></div>
-    </div>
-
+    <div class="ds-banner" id="dsbanner">⏳ initialising...</div>
+    <div class="section"><div class="label">going to</div><div class="destgrid" id="destgrid"></div></div>
     <div class="section">
       <div class="label">context</div>
       <div class="ctrls">
-        <div class="ctrl">
-          <div class="ctrlhead"><span>arrival hour</span><strong class="ctrlval" id="hourlbl">11:00</strong></div>
-          <input type="range" min="0" max="23" value="11" id="hour">
-        </div>
-        <div class="ctrl">
-          <div class="ctrlhead"><span>day</span></div>
-          <div class="chips" id="days"></div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrlhead"><span>weather</span></div>
-          <div class="chips" id="weather"></div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrlhead"><span>extras</span></div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="pill" id="event">◎ major event</button>
-            <button class="pill prem" id="premium">✦ premium</button>
-          </div>
-        </div>
+        <div class="ctrl"><div class="ctrlhead"><span>arrival hour</span><strong class="ctrlval" id="hourlbl">11:00</strong></div><input type="range" min="0" max="23" value="11" id="hour"></div>
+        <div class="ctrl"><div class="ctrlhead"><span>day</span></div><div class="chips" id="days"></div></div>
+        <div class="ctrl"><div class="ctrlhead"><span>weather</span></div><div class="chips" id="weather"></div></div>
+        <div class="ctrl"><div class="ctrlhead"><span>extras</span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" id="event">◎ major event</button><button class="pill prem" id="premium">✦ premium</button></div></div>
       </div>
     </div>
-
     <div id="hero"></div>
     <div class="label">all options, ranked</div>
-    <div class="list" id="list"></div>
+    <div class="list" id="list"><div class="loading">loading spots...</div></div>
   </div>
-
   <div class="mapwrap">
     <div id="map"></div>
     <div class="legend">
       <div class="legtitle">status confidence</div>
-      <div class="legrow"><span class="dot" style="background:#1a7f3a"></span> tracked live</div>
+      <div class="legrow"><span class="dot" style="background:#1a7f3a"></span> tracked live (TfNSW)</div>
       <div class="legrow"><span class="dot" style="background:#c78200;box-shadow:0 0 0 3px #c7820022"></span> ticket-derived</div>
       <div class="legrow"><span class="dot" style="background:transparent;border:2px solid #8a8273"></span> predicted</div>
     </div>
@@ -143,107 +129,341 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: #1a
 </div>
 
 <script>
+// ═══════════════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════════════
+const TFNSW_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJWM053Y014Y3FzbWtKNTcyZ09SZi1rS3YtVXNNZnlhQXhGdkRyUEdIQTFRIiwiaWF0IjoxNzc2NTU1NzA0fQ.A_SIU3NKLXpHbrtfilRpa952yHQqg-rmDN8_SyvJH-8';
+const PROXY_URL     = 'http://localhost:8787';
+
+// ═══════════════════════════════════════════════════════════════════════
+// PARK&RIDE DATASET — embedded from parknride_pois.csv
+// Source: Transport for NSW Open Data · 33 facilities statewide
+// ═══════════════════════════════════════════════════════════════════════
+const PARKNRIDE_POIS = [
+  { tsn:'213110',  suburb:'Ashfield',       name:'Park&Ride - Ashfield',                       lat:-33.888083, lng:151.126528 },
+  { tsn:'210020',  suburb:'Brookvale',      name:'Park&Ride - Brookvale',                      lat:-33.767338, lng:151.269624 },
+  { tsn:'2099207', suburb:'Dee Why',        name:'Park&Ride - Dee Why',                        lat:-33.750278, lng:151.286694 },
+  { tsn:'207210',  suburb:'Gordon',         name:'Park&Ride - Gordon Henry St (North)',        lat:-33.757000, lng:151.154694 },
+  { tsn:'207210',  suburb:'Gordon',         name:'Park&Ride - Gordon Henry St (South)',        lat:-33.757889, lng:151.155306 },
+  { tsn:'253330',  suburb:'Kiama',          name:'Park&Ride - Kiama',                          lat:-34.672959, lng:150.854592 },
+  { tsn:'221710',  suburb:'Kogarah',        name:'Park&Ride - Kogarah',                        lat:-33.963722, lng:151.131944 },
+  { tsn:'2093117', suburb:'Manly Vale',     name:'Park&Ride - Manly Vale',                     lat:-33.786521, lng:151.267201 },
+  { tsn:'2103108', suburb:'Mona Vale',      name:'Park&Ride - Mona Vale',                      lat:-33.677462, lng:151.306499 },
+  { tsn:'2101130', suburb:'Narrabeen',      name:'Park&Ride - Narrabeen',                      lat:-33.714367, lng:151.297185 },
+  { tsn:'221210',  suburb:'Revesby',        name:'Park&Ride - Revesby',                        lat:-33.950881, lng:151.015727 },
+  { tsn:'214710',  suburb:'Seven Hills',    name:'Park&Ride - Seven Hills',                    lat:-33.772995, lng:150.936739 },
+  { tsn:'2101131', suburb:'Warriewood',     name:'Park&Ride - Warriewood',                     lat:-33.695880, lng:151.302577 },
+  { tsn:'211420',  suburb:'West Ryde',      name:'Park&Ride - West Ryde',                      lat:-33.806929, lng:151.091015 },
+  { tsn:'217933',  suburb:'Leppington',     name:'Park&Ride - Leppington',                     lat:-33.953844, lng:150.807202 },
+  { tsn:'217426',  suburb:'Edmondson Park', name:'Park&Ride - Edmondson Park (South)',         lat:-33.969584, lng:150.856239 },
+  { tsn:'223210',  suburb:'Sutherland',     name:'Park&Ride - Sutherland',                     lat:-34.030316, lng:151.057764 },
+  { tsn:'225040',  suburb:'Gosford',        name:'Park&Ride - Gosford',                        lat:-33.424760, lng:151.340886 },
+  { tsn:'276010',  suburb:'St Marys',       name:'Park&Ride - St Marys',                       lat:-33.761473, lng:150.775748 },
+  { tsn:'256020',  suburb:'Campbelltown',   name:'Park&Ride - Campbelltown Hurley St',         lat:-34.065820, lng:150.812420 },
+  { tsn:'256020',  suburb:'Campbelltown',   name:'Park&Ride - Campbelltown Farrow Rd (North)', lat:-34.062260, lng:150.815270 },
+  { tsn:'275010',  suburb:'Penrith',        name:'Park&Ride - Penrith',                        lat:-33.748390, lng:150.695080 },
+  { tsn:'217010',  suburb:'Warwick Farm',   name:'Park&Ride - Warwick Farm',                   lat:-33.913849, lng:150.934472 },
+  { tsn:'276220',  suburb:'Schofields',     name:'Park&Ride - Schofields',                     lat:-33.703603, lng:150.872715 },
+  { tsn:'207720',  suburb:'Hornsby',        name:'Park&Ride - Hornsby',                        lat:-33.701351, lng:151.098000 },
+  { tsn:'2155384', suburb:'Tallawong',      name:'Park&Ride - Tallawong P1',                   lat:-33.693260, lng:150.905230 },
+  { tsn:'2155384', suburb:'Tallawong',      name:'Park&Ride - Tallawong P2',                   lat:-33.693040, lng:150.904370 },
+  { tsn:'2155384', suburb:'Tallawong',      name:'Park&Ride - Tallawong P3',                   lat:-33.693850, lng:150.903920 },
+  { tsn:'2155382', suburb:'Kellyville',     name:'Park&Ride - Kellyville (North)',             lat:-33.711165, lng:150.934374 },
+  { tsn:'2155382', suburb:'Kellyville',     name:'Park&Ride - Kellyville (South)',             lat:-33.715015, lng:150.936356 },
+  { tsn:'2153478', suburb:'Bella Vista',    name:'Park&Ride - Bella Vista',                    lat:-33.728030, lng:150.942210 },
+  { tsn:'2154392', suburb:'Castle Hill',    name:'Park&Ride - Hills Showground',               lat:-33.727783, lng:150.985059 },
+  { tsn:'2126158', suburb:'Cherrybrook',    name:'Park&Ride - Cherrybrook',                    lat:-33.737387, lng:151.033415 },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// DESTINATIONS — regional clusters, each with its Park&Rides + mock spots
+// ═══════════════════════════════════════════════════════════════════════
 const DESTS = [
-  { id:'cbd', name:'Sydney CBD', lat:-33.8688, lng:151.2093, icon:'▲' },
-  { id:'bondi', name:'Bondi Beach', lat:-33.8915, lng:151.2767, icon:'◉' },
-  { id:'scg', name:'SCG / Moore Park', lat:-33.8914, lng:151.2247, icon:'◇' },
-  { id:'chatswood', name:'Chatswood', lat:-33.7969, lng:151.1832, icon:'◆' },
+  { id:'cbd',         name:'Sydney CBD',         lat:-33.8688, lng:151.2093, icon:'▲', pnrSuburbs:['Ashfield','West Ryde'] },
+  { id:'bondi',       name:'Bondi Beach',        lat:-33.8915, lng:151.2767, icon:'◉', pnrSuburbs:[] },
+  { id:'scg',         name:'SCG / Moore Park',   lat:-33.8914, lng:151.2247, icon:'◇', pnrSuburbs:[] },
+  { id:'northern',    name:'Northern Beaches',   lat:-33.7517, lng:151.2879, icon:'≈', pnrSuburbs:['Dee Why','Brookvale','Manly Vale','Mona Vale','Narrabeen','Warriewood'] },
+  { id:'chatswood',   name:'Chatswood / Nth',    lat:-33.7969, lng:151.1832, icon:'◆', pnrSuburbs:['Gordon','Hornsby'] },
+  { id:'hills',       name:'Hills / Metro NW',   lat:-33.7200, lng:150.9500, icon:'⬡', pnrSuburbs:['Tallawong','Kellyville','Bella Vista','Castle Hill','Cherrybrook'] },
+  { id:'west',        name:'Western Sydney',     lat:-33.7600, lng:150.8500, icon:'⬢', pnrSuburbs:['Seven Hills','St Marys','Penrith','Schofields'] },
+  { id:'south',       name:'Southern Sydney',    lat:-34.0000, lng:151.1000, icon:'▽', pnrSuburbs:['Kogarah','Sutherland','Revesby'] },
+  { id:'southwest',   name:'South-West',         lat:-33.9500, lng:150.8500, icon:'◁', pnrSuburbs:['Leppington','Edmondson Park','Campbelltown','Warwick Farm'] },
 ];
 
-const SPOTS = [
-  { id:1,name:'Wilson Pitt St',dest:'cbd',lat:-33.8705,lng:151.2075,type:'commercial',capacity:340,source:'tracked',rate:22,premiumRate:14,walkMin:2,baselineBusy:0.85 },
-  { id:2,name:'Secure Goulburn St',dest:'cbd',lat:-33.8790,lng:151.2080,type:'commercial',capacity:280,source:'tracked',rate:18,premiumRate:12,walkMin:5,baselineBusy:0.70 },
-  { id:3,name:'Kent St (street)',dest:'cbd',lat:-33.8678,lng:151.2055,type:'street',capacity:24,source:'derived',rate:6,premiumRate:6,walkMin:6,baselineBusy:0.90 },
-  { id:4,name:'The Rocks Car Park',dest:'cbd',lat:-33.8600,lng:151.2090,type:'commercial',capacity:410,source:'tracked',rate:20,premiumRate:13,walkMin:9,baselineBusy:0.60 },
-  { id:5,name:'Wynyard Ln (street)',dest:'cbd',lat:-33.8668,lng:151.2060,type:'street',capacity:12,source:'derived',rate:7,premiumRate:7,walkMin:3,baselineBusy:0.95 },
-  { id:6,name:'QVB Underground',dest:'cbd',lat:-33.8720,lng:151.2069,type:'commercial',capacity:220,source:'tracked',rate:19,premiumRate:13,walkMin:4,baselineBusy:0.75 },
-  { id:10,name:'Campbell Pde (street)',dest:'bondi',lat:-33.8914,lng:151.2768,type:'street',capacity:60,source:'derived',rate:5,premiumRate:5,walkMin:2,baselineBusy:0.92 },
-  { id:11,name:'Bondi Pavilion Lot',dest:'bondi',lat:-33.8911,lng:151.2780,type:'commercial',capacity:180,source:'tracked',rate:8,premiumRate:6,walkMin:4,baselineBusy:0.85 },
-  { id:12,name:'Wallis Pde driveway',dest:'bondi',lat:-33.8922,lng:151.2740,type:'private',capacity:1,source:'tracked',rate:7,premiumRate:5,walkMin:6,baselineBusy:0.50 },
-  { id:13,name:'Park & Ride Bondi Jn',dest:'bondi',lat:-33.8915,lng:151.2490,type:'park-ride',capacity:420,source:'tracked',rate:4,premiumRate:3,walkMin:18,baselineBusy:0.40 },
-  { id:14,name:'Hall St (street)',dest:'bondi',lat:-33.8899,lng:151.2750,type:'street',capacity:30,source:'derived',rate:5,premiumRate:5,walkMin:5,baselineBusy:0.88 },
-  { id:20,name:'Moore Park Lot 1',dest:'scg',lat:-33.8940,lng:151.2240,type:'commercial',capacity:500,source:'tracked',rate:12,premiumRate:8,walkMin:5,baselineBusy:0.80 },
-  { id:21,name:'Fox Studios Lot',dest:'scg',lat:-33.8925,lng:151.2272,type:'commercial',capacity:350,source:'tracked',rate:10,premiumRate:7,walkMin:7,baselineBusy:0.65 },
-  { id:22,name:'Driver Ave (street)',dest:'scg',lat:-33.8905,lng:151.2248,type:'street',capacity:40,source:'derived',rate:0,premiumRate:0,walkMin:3,baselineBusy:0.95 },
-  { id:23,name:'Queens Park Rd',dest:'scg',lat:-33.8965,lng:151.2375,type:'street',capacity:80,source:'predicted',rate:0,premiumRate:0,walkMin:14,baselineBusy:0.55 },
-  { id:30,name:'Westfield Chatswood',dest:'chatswood',lat:-33.7965,lng:151.1825,type:'commercial',capacity:1200,source:'tracked',rate:5,premiumRate:3,walkMin:3,baselineBusy:0.55 },
-  { id:31,name:'Chatswood Interchange',dest:'chatswood',lat:-33.7978,lng:151.1810,type:'commercial',capacity:500,source:'tracked',rate:6,premiumRate:4,walkMin:4,baselineBusy:0.50 },
-  { id:32,name:'Archer St (street)',dest:'chatswood',lat:-33.7985,lng:151.1840,type:'street',capacity:22,source:'derived',rate:4,premiumRate:4,walkMin:6,baselineBusy:0.85 },
+// ═══════════════════════════════════════════════════════════════════════
+// MOCK SPOTS — commercial/street parking for destinations not covered by TfNSW API
+// ═══════════════════════════════════════════════════════════════════════
+const MOCK_SPOTS = [
+  // Sydney CBD
+  { id:'cbd-1', name:'Wilson Pitt St',        dest:'cbd',  lat:-33.8705, lng:151.2075, type:'commercial', capacity:340, source:'derived',   rate:22, premiumRate:14, walkMin:2,  baselineBusy:0.85 },
+  { id:'cbd-2', name:'Secure Goulburn St',    dest:'cbd',  lat:-33.8790, lng:151.2080, type:'commercial', capacity:280, source:'derived',   rate:18, premiumRate:12, walkMin:5,  baselineBusy:0.70 },
+  { id:'cbd-3', name:'Kent St (street)',      dest:'cbd',  lat:-33.8678, lng:151.2055, type:'street',     capacity:24,  source:'derived',   rate:6,  premiumRate:6,  walkMin:6,  baselineBusy:0.90 },
+  { id:'cbd-4', name:'The Rocks Car Park',    dest:'cbd',  lat:-33.8600, lng:151.2090, type:'commercial', capacity:410, source:'derived',   rate:20, premiumRate:13, walkMin:9,  baselineBusy:0.60 },
+  { id:'cbd-5', name:'Wynyard Ln (street)',   dest:'cbd',  lat:-33.8668, lng:151.2060, type:'street',     capacity:12,  source:'predicted', rate:7,  premiumRate:7,  walkMin:3,  baselineBusy:0.95 },
+  { id:'cbd-6', name:'QVB Underground',       dest:'cbd',  lat:-33.8720, lng:151.2069, type:'commercial', capacity:220, source:'derived',   rate:19, premiumRate:13, walkMin:4,  baselineBusy:0.75 },
+  // Bondi
+  { id:'bon-1', name:'Campbell Pde (street)', dest:'bondi',lat:-33.8914, lng:151.2768, type:'street',     capacity:60,  source:'derived',   rate:5,  premiumRate:5,  walkMin:2,  baselineBusy:0.92 },
+  { id:'bon-2', name:'Bondi Pavilion Lot',    dest:'bondi',lat:-33.8911, lng:151.2780, type:'commercial', capacity:180, source:'derived',   rate:8,  premiumRate:6,  walkMin:4,  baselineBusy:0.85 },
+  { id:'bon-3', name:'Wallis Pde driveway',   dest:'bondi',lat:-33.8922, lng:151.2740, type:'private',    capacity:1,   source:'derived',   rate:7,  premiumRate:5,  walkMin:6,  baselineBusy:0.50 },
+  { id:'bon-4', name:'Hall St (street)',      dest:'bondi',lat:-33.8899, lng:151.2750, type:'street',     capacity:30,  source:'predicted', rate:5,  premiumRate:5,  walkMin:5,  baselineBusy:0.88 },
+  // SCG
+  { id:'scg-1', name:'Moore Park Lot 1',      dest:'scg',  lat:-33.8940, lng:151.2240, type:'commercial', capacity:500, source:'derived',   rate:12, premiumRate:8,  walkMin:5,  baselineBusy:0.80 },
+  { id:'scg-2', name:'Fox Studios Lot',       dest:'scg',  lat:-33.8925, lng:151.2272, type:'commercial', capacity:350, source:'derived',   rate:10, premiumRate:7,  walkMin:7,  baselineBusy:0.65 },
+  { id:'scg-3', name:'Driver Ave (street)',   dest:'scg',  lat:-33.8905, lng:151.2248, type:'street',     capacity:40,  source:'derived',   rate:0,  premiumRate:0,  walkMin:3,  baselineBusy:0.95 },
+  { id:'scg-4', name:'Queens Park Rd',        dest:'scg',  lat:-33.8965, lng:151.2375, type:'street',     capacity:80,  source:'predicted', rate:0,  premiumRate:0,  walkMin:14, baselineBusy:0.55 },
+  // Northern Beaches — supplementary commercial/street
+  { id:'nb-1',  name:'Manly Wharf Car Park',  dest:'northern', lat:-33.8014, lng:151.2849, type:'commercial', capacity:380, source:'derived',   rate:7,  premiumRate:5,  walkMin:3,  baselineBusy:0.85 },
+  { id:'nb-2',  name:'The Corso (street)',    dest:'northern', lat:-33.7985, lng:151.2862, type:'street',     capacity:45,  source:'derived',   rate:6,  premiumRate:6,  walkMin:4,  baselineBusy:0.93 },
+  // Chatswood
+  { id:'cha-1', name:'Westfield Chatswood',   dest:'chatswood',lat:-33.7965, lng:151.1825, type:'commercial', capacity:1200,source:'derived',   rate:5,  premiumRate:3,  walkMin:3,  baselineBusy:0.55 },
+  { id:'cha-2', name:'Chatswood Interchange', dest:'chatswood',lat:-33.7978, lng:151.1810, type:'commercial', capacity:500, source:'derived',   rate:6,  premiumRate:4,  walkMin:4,  baselineBusy:0.50 },
+  { id:'cha-3', name:'Archer St (street)',    dest:'chatswood',lat:-33.7985, lng:151.1840, type:'street',     capacity:22,  source:'derived',   rate:4,  premiumRate:4,  walkMin:6,  baselineBusy:0.85 },
+  // Hills — supplementary (Rouse Hill Town Centre etc)
+  { id:'hills-1', name:'Rouse Hill Town Centre', dest:'hills', lat:-33.6859, lng:150.9158, type:'commercial', capacity:2800, source:'derived', rate:2, premiumRate:0, walkMin:4, baselineBusy:0.55 },
+  // Western — Penrith Westfield etc
+  { id:'w-1', name:'Westfield Penrith',       dest:'west',  lat:-33.7527, lng:150.6937, type:'commercial', capacity:2300, source:'derived', rate:2, premiumRate:0, walkMin:3, baselineBusy:0.60 },
+  // Southern
+  { id:'s-1', name:'Westfield Hurstville',    dest:'south', lat:-33.9671, lng:151.1022, type:'commercial', capacity:1800, source:'derived', rate:4, premiumRate:2, walkMin:5, baselineBusy:0.70 },
 ];
 
+// ═══════════════════════════════════════════════════════════════════════
+// TFNSW FACILITY ID MAPPING — match confirmed live IDs to our POI dataset
+// Maps facility_id → TSN so we know which live data belongs to which POI
+// Ordered from the /carpark endpoint response
+// ═══════════════════════════════════════════════════════════════════════
+const FACILITY_TO_TSN = {
+  // Historical-only (IDs 1-5) excluded
+  '6':  '207210',  // Park&Ride - Gordon Henry St (north)
+  '7':  '253330',  // Park&Ride - Kiama
+  '8':  '225040',  // Park&Ride - Gosford
+  '9':  '221210',  // Park&Ride - Revesby
+  '10': '2101131', // Park&Ride - Warriewood
+  '11': '2101130', // Park&Ride - Narrabeen
+  '12': '2103108', // Park&Ride - Mona Vale
+  '13': '2099207', // Park&Ride - Dee Why
+  '14': '211420',  // Park&Ride - West Ryde
+  '15': '223210',  // Park&Ride - Sutherland
+  '16': '217933',  // Park&Ride - Leppington
+  '17': '217426',  // Park&Ride - Edmondson Park (south)
+  '18': '207720',  // Park&Ride - Hornsby (assumed)
+  '19': '214710',  // Park&Ride - Seven Hills (assumed)
+  '20': '275010',  // Park&Ride - Penrith (assumed)
+  '21': '276010',  // Park&Ride - St Marys (assumed)
+  '22': '276220',  // Park&Ride - Schofields (assumed)
+  '23': '256020',  // Park&Ride - Campbelltown (assumed)
+  '24': '217010',  // Park&Ride - Warwick Farm (assumed)
+  '25': '210020',  // Park&Ride - Brookvale (assumed)
+  '26': '2093117', // Park&Ride - Manly Vale (assumed)
+  '27': '213110',  // Park&Ride - Ashfield (assumed)
+  '28': '221710',  // Park&Ride - Kogarah (assumed)
+};
+
+// Heuristic multipliers
 const HRM = [0.20,0.15,0.10,0.10,0.15,0.30,0.60,0.95,1.10,1.05,0.85,0.80,0.95,0.90,0.80,0.85,0.95,1.05,1.00,0.85,0.70,0.55,0.40,0.30];
 const DM = { mon:1.05,tue:1.05,wed:1.05,thu:1.05,fri:1.10,sat:0.90,sun:0.80 };
-const WD = { sunny:{cbd:1.0,bondi:1.3,scg:1.05,chatswood:0.95}, cloudy:{cbd:1.0,bondi:1.0,scg:1.0,chatswood:1.0}, rainy:{cbd:1.05,bondi:0.5,scg:0.75,chatswood:1.0} };
+const WD = {
+  sunny:{cbd:1.0,bondi:1.3,scg:1.05,northern:1.25,chatswood:0.95,hills:0.95,west:0.95,south:1.0,southwest:0.95},
+  cloudy:{cbd:1.0,bondi:1.0,scg:1.0,northern:1.0,chatswood:1.0,hills:1.0,west:1.0,south:1.0,southwest:1.0},
+  rainy:{cbd:1.05,bondi:0.5,scg:0.75,northern:0.6,chatswood:1.0,hills:1.0,west:1.0,south:1.0,southwest:1.0}
+};
 const SCOL = { green:'#1a7f3a', yellow:'#c78200', red:'#c23434' };
 
+// ═══════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════
 let state = { dest:'cbd', hour:11, day:'sat', weather:'sunny', event:false, premium:false, tick:0 };
+let liveFacilities = {};  // keyed by facility_id
+let dataSource = 'init';
+let map, spotLayer, destMarker;
 
-function status(spot) {
-  const dem = HRM[state.hour] * DM[state.day] * (WD[state.weather][spot.dest]||1) * (state.event && (spot.dest==='scg'||spot.dest==='cbd') ? 1.4 : 1);
-  let occ = Math.min(0.99, Math.max(0.05, spot.baselineBusy * dem));
-  let avail = 1 - occ;
-  let conf = 0.5, lab = 'predicted';
-  if (spot.source === 'tracked') {
-    const n = (Math.sin(spot.id*13 + state.hour*7 + state.tick*0.4)+1)/2 * 0.15;
-    avail = Math.min(0.98, Math.max(0.02, avail + n - 0.075));
-    conf = 0.95; lab = 'tracked live';
-  } else if (spot.source === 'derived') {
-    const n = (Math.cos(spot.id*11 + state.hour*5)+1)/2 * 0.10;
-    avail = Math.min(0.95, Math.max(0.05, avail + n - 0.05));
-    conf = 0.75; lab = 'ticket data';
+// ═══════════════════════════════════════════════════════════════════════
+// TFNSW CLIENT
+// ═══════════════════════════════════════════════════════════════════════
+async function fetchTfNSW(endpoint) {
+  const attempts = [];
+  if (TFNSW_API_KEY !== 'YOUR_KEY_HERE') {
+    attempts.push({ url: `https://api.transport.nsw.gov.au/v1${endpoint}`, headers: { 'Authorization': `apikey ${TFNSW_API_KEY}` }, mode: 'direct' });
   }
+  attempts.push({ url: `${PROXY_URL}${endpoint}`, headers: {}, mode: 'proxy' });
+  for (const { url, headers, mode } of attempts) {
+    try {
+      const res = await fetch(url, { headers });
+      if (!res.ok) continue;
+      return { data: await res.json(), mode };
+    } catch (e) { continue; }
+  }
+  throw new Error('All data sources unreachable');
+}
+
+async function refreshLiveData() {
+  try {
+    const ids = Object.keys(FACILITY_TO_TSN);
+    const results = await Promise.all(ids.map(id => fetchTfNSW(`/carpark?facility=${id}`).catch(() => null)));
+    liveFacilities = {};
+    let mode = 'direct';
+    results.forEach((r, i) => {
+      if (r && r.data && r.data.location) {
+        mode = r.mode;
+        const id = ids[i];
+        liveFacilities[id] = {
+          tsn: FACILITY_TO_TSN[id],
+          spots: parseInt(r.data.spots) || 0,
+          occupied: parseInt(r.data.occupancy?.total) || 0,
+          name: r.data.zones?.[0]?.zone_name || `Facility ${id}`,
+          lat: parseFloat(r.data.location.latitude),
+          lng: parseFloat(r.data.location.longitude),
+          suburb: (r.data.location.suburb || '').trim(),
+          address: r.data.location.address,
+        };
+      }
+    });
+    dataSource = mode === 'direct' ? 'live-direct' : 'live-proxy';
+    const count = Object.keys(liveFacilities).length;
+    if (count > 0) {
+      updateBanner(`✓ TfNSW live · ${count}/${ids.length} facilities · via ${mode}`, 'ok');
+    } else {
+      updateBanner('✗ No facilities returned · check key / proxy · using mock', 'err');
+    }
+  } catch (e) {
+    dataSource = 'mock-fallback';
+    updateBanner('✗ TfNSW unreachable · start proxy.py · using mock', 'err');
+    console.warn('TfNSW fetch failed:', e);
+  }
+}
+
+function updateBanner(msg, kind) {
+  const el = document.getElementById('dsbanner');
+  el.textContent = msg;
+  el.className = 'ds-banner' + (kind === 'err' ? ' err' : kind === 'warn' ? ' warn' : '');
+  const live = document.getElementById('livestatus');
+  live.className = 'live' + (kind === 'err' ? ' err' : '');
+  live.innerHTML = `<span class="pulse"></span>${kind === 'err' ? 'mock' : 'live'}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// GEO HELPERS
+// ═══════════════════════════════════════════════════════════════════════
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const toRad = d => d * Math.PI / 180;
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// How far to walk from a P&R to the destination centre (rough — km × 12 min/km)
+function estWalkMin(pnr, dest) {
+  const km = haversineKm(pnr.lat, pnr.lng, dest.lat, dest.lng);
+  if (km < 0.5) return Math.round(km * 15);      // very close
+  if (km < 3)   return Math.round(km * 13 + 2);  // walkable
+  return Math.round(km * 10 + 10);               // implied: train+walk
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SPOT ASSEMBLY
+// ═══════════════════════════════════════════════════════════════════════
+function buildSpotsForDestination(destId) {
+  const dest = DESTS.find(d => d.id === destId);
+  const spots = [];
+
+  // 1. Real TfNSW facilities whose suburb matches this destination
+  Object.entries(liveFacilities).forEach(([facId, live]) => {
+    const pnr = PARKNRIDE_POIS.find(p => p.tsn === live.tsn);
+    if (!pnr) return;
+
+    // Include if matching suburb cluster, OR it's within 5km of destination
+    const suburbMatch = dest.pnrSuburbs.includes(pnr.suburb);
+    const dist = haversineKm(pnr.lat, pnr.lng, dest.lat, dest.lng);
+    if (!suburbMatch && dist > 8) return;
+
+    const walkMin = estWalkMin(pnr, dest);
+    spots.push({
+      id: `tfnsw-${facId}`,
+      name: pnr.name,
+      dest: destId,
+      lat: pnr.lat,
+      lng: pnr.lng,
+      type: 'park-ride',
+      capacity: live.spots,
+      occupied: live.occupied,
+      source: 'tracked',
+      rate: 4,
+      premiumRate: 3,
+      walkMin,
+      baselineBusy: 0.5,
+      _live: true,
+    });
+  });
+
+  // 2. Mock spots for this destination (commercial/street)
+  MOCK_SPOTS.filter(s => s.dest === destId).forEach(s => spots.push({...s}));
+
+  return spots;
+}
+
+function computeStatus(spot) {
+  const dem = HRM[state.hour] * DM[state.day] * (WD[state.weather][spot.dest]||1) * (state.event && (spot.dest==='scg'||spot.dest==='cbd') ? 1.4 : 1);
+  let avail, conf, lab, reason;
+
+  if (spot._live && spot.capacity > 0) {
+    const free = Math.max(0, spot.capacity - spot.occupied);
+    avail = free / spot.capacity;
+    conf = 0.95;
+    lab = 'TfNSW live';
+    reason = `${free} of ${spot.capacity} bays free right now (live from TfNSW Park&Ride API)`;
+  } else if (spot.source === 'derived') {
+    let occ = Math.min(0.99, Math.max(0.05, spot.baselineBusy * dem));
+    const n = (Math.cos(hashStr(spot.id)*11 + state.hour*5)+1)/2 * 0.10;
+    avail = Math.min(0.95, Math.max(0.05, (1 - occ) + n - 0.05));
+    conf = 0.75;
+    lab = 'ticket data';
+    reason = `~${Math.round(avail*100)}% free based on active tickets`;
+  } else {
+    let occ = Math.min(0.99, Math.max(0.05, spot.baselineBusy * dem));
+    avail = 1 - occ;
+    conf = 0.5;
+    lab = 'predicted';
+    reason = `predicted ~${Math.round(avail*100)}% free for ${state.day} ${state.hour}:00`;
+  }
+
   let st = 'yellow';
   if (avail >= 0.55) st = 'green';
   else if (avail <= 0.25) st = 'red';
-  const busy = (spot.baselineBusy * HRM[state.hour] * DM[state.day]) >= 0.75;
+
+  const busy = ((spot.baselineBusy || 0.5) * HRM[state.hour] * DM[state.day]) >= 0.75;
   const commute = Math.round(8 + spot.walkMin*0.5*(state.weather==='rainy'?1.2:1) + (state.event?6:0));
-  let reason;
-  if (spot.source==='tracked') reason = `${Math.round(spot.capacity*avail)} of ${spot.capacity} bays free (${lab})`;
-  else if (spot.source==='derived') reason = `~${Math.round(avail*100)}% free based on active tickets`;
-  else reason = `predicted ~${Math.round(avail*100)}% free for ${state.day} ${state.hour}:00`;
-  return { ...spot, availability:avail, status:st, confidence:conf, sourceLabel:lab, busyFlag:busy, commuteMin:commute, reason };
+
+  return { ...spot, availability: avail, status: st, confidence: conf, sourceLabel: lab, busyFlag: busy, commuteMin: commute, reason };
 }
+
+function hashStr(s) { let h = 0; for (let i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i); return Math.abs(h); }
 
 function score(s) {
   const price = state.premium ? s.premiumRate : s.rate;
   return s.availability*100*0.35 + Math.max(0,100-s.commuteMin*2.5)*0.20 + Math.max(0,100-s.walkMin*5)*0.20 + Math.max(0,100-price*4)*0.15 + s.confidence*10 + (s.busyFlag?-8:0);
 }
 
-let map, spotLayer, destMarker;
-
+// ═══════════════════════════════════════════════════════════════════════
+// MAP
+// ═══════════════════════════════════════════════════════════════════════
 function initMap() {
-  map = L.map('map', { zoomControl:false }).setView([-33.8688, 151.2093], 14);
+  map = L.map('map', { zoomControl:false }).setView([-33.8688, 151.2093], 11);
   L.control.zoom({ position:'topright' }).addTo(map);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap © CARTO',
-    maxZoom: 19,
-  }).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }).addTo(map);
   spotLayer = L.layerGroup().addTo(map);
 }
 
 function pinIcon(spot, isBest) {
   const col = SCOL[spot.status];
   let style = `background:${col};`;
-  if (spot.confidence < 0.65) {
-    style = `background:transparent;border:2px solid ${col};`;
-  } else if (spot.confidence < 0.9) {
-    style = `background:${col};box-shadow:0 0 0 3px ${col}33;`;
-  }
-  return L.divIcon({
-    className: '',
-    html: `<div class="pinwrap"><div class="pin ${isBest?'best':''}" style="${style}"></div></div>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 14],
-  });
+  if (spot.confidence < 0.65) style = `background:transparent;border:2px solid ${col};`;
+  else if (spot.confidence < 0.9) style = `background:${col};box-shadow:0 0 0 3px ${col}33;`;
+  return L.divIcon({ className:'', html:`<div class="pinwrap"><div class="pin ${isBest?'best':''}" style="${style}"></div></div>`, iconSize:[28,28], iconAnchor:[14,14] });
 }
 
 function destIcon(d) {
-  return L.divIcon({
-    className: '',
-    html: `<div class="destpin">${d.icon}</div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-  });
+  return L.divIcon({ className:'', html:`<div class="destpin">${d.icon}</div>`, iconSize:[36,36], iconAnchor:[18,18] });
 }
 
 function renderMap(spots, best) {
@@ -258,11 +478,24 @@ function renderMap(spots, best) {
     m.bindPopup(`<div class="popn">${s.name}</div><div class="popd">${Math.round(s.availability*100)}% free · ${s.walkMin}m walk · ${price}</div>`);
     m.addTo(spotLayer);
   });
-  map.setView([dest.lat, dest.lng], 14, { animate: true });
+  const bounds = L.latLngBounds([[dest.lat, dest.lng], ...spots.slice(0, 4).map(s => [s.lat, s.lng])]);
+  if (bounds.isValid()) map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════
 function render() {
-  const spots = SPOTS.filter(s => s.dest === state.dest).map(status).map(s => ({...s, score:score(s)})).sort((a,b) => b.score-a.score);
+  const raw = buildSpotsForDestination(state.dest);
+  const spots = raw.map(computeStatus).map(s => ({...s, score: score(s)})).sort((a,b) => b.score - a.score);
+
+  if (spots.length === 0) {
+    document.getElementById('hero').innerHTML = '';
+    document.getElementById('list').innerHTML = '<div class="loading">no spots loaded yet · waiting for TfNSW data...</div>';
+    renderMap([], {id:''});
+    return;
+  }
+
   const best = spots[0];
   const dest = DESTS.find(d => d.id === state.dest);
   const p = state.premium;
@@ -275,7 +508,7 @@ function render() {
       <div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:10px">
         <div>
           <div class="heroN">${best.name}</div>
-          <div class="heroT">${best.type.replace('-',' ')} · near ${dest.name}</div>
+          <div class="heroT">${(best.type||'').replace('-',' ')} · near ${dest.name}</div>
         </div>
         <div style="padding:5px 10px;border-radius:999px;background:${best.status==='green'?'#1e4a2a':best.status==='yellow'?'#4d3a10':'#4a1818'};color:${SCOL[best.status]};font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;height:fit-content">${best.status==='green'?'likely free':best.status==='yellow'?'maybe free':'likely full'}</div>
       </div>
@@ -310,21 +543,22 @@ function render() {
 
   document.querySelectorAll('.row').forEach(r => {
     r.onclick = () => {
-      const id = +r.dataset.id;
+      const id = r.dataset.id;
       const s = spots.find(x => x.id === id);
       map.setView([s.lat, s.lng], 16, { animate: true });
-      spotLayer.eachLayer(l => {
-        if (l.getLatLng && Math.abs(l.getLatLng().lat - s.lat) < 0.0001) l.openPopup();
-      });
+      spotLayer.eachLayer(l => { if (l.getLatLng && Math.abs(l.getLatLng().lat - s.lat) < 0.0001) l.openPopup(); });
     };
   });
 
   renderMap(spots, best);
 }
 
-// wire controls
 function buildDests() {
-  document.getElementById('destgrid').innerHTML = DESTS.map(d => `<button class="dest ${state.dest===d.id?'on':''}" data-id="${d.id}">${d.icon} ${d.name}</button>`).join('');
+  document.getElementById('destgrid').innerHTML = DESTS.map(d => {
+    const rawSpots = buildSpotsForDestination(d.id);
+    const tracked = rawSpots.filter(s => s._live).length;
+    return `<button class="dest ${state.dest===d.id?'on':''}" data-id="${d.id}">${d.icon} ${d.name}<div class="c">${tracked > 0 ? `${tracked} live · ` : ''}${rawSpots.length} spots</div></button>`;
+  }).join('');
   document.querySelectorAll('.dest').forEach(b => b.onclick = () => { state.dest = b.dataset.id; buildDests(); render(); });
 }
 function buildDays() {
@@ -341,14 +575,18 @@ document.getElementById('hour').oninput = e => { state.hour = +e.target.value; d
 document.getElementById('event').onclick = e => { state.event = !state.event; e.target.classList.toggle('on'); render(); };
 document.getElementById('premium').onclick = e => { state.premium = !state.premium; e.target.classList.toggle('on'); render(); };
 
-initMap();
-buildDests();
-buildDays();
-buildWeather();
-render();
-
-// live tick
-setInterval(() => { state.tick++; render(); }, 4000);
+(async function() {
+  initMap();
+  buildDays();
+  buildWeather();
+  buildDests();
+  render();
+  await refreshLiveData();
+  buildDests();
+  render();
+  setInterval(async () => { await refreshLiveData(); state.tick++; buildDests(); render(); }, 60000);
+  setInterval(() => { state.tick++; render(); }, 4000);
+})();
 </script>
 </body>
 </html>
